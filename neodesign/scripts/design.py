@@ -3,7 +3,7 @@
 Peptide generation using MCMC sampling on energy map
 Input: MHC pseudo-seq and/or TCR sequence
 Output: Top # peptides with lowest energy
-User can specify peptide length and number which is flexible 
+Users can flexibly specify peptide length and number to generate
 """
 import os
 import torch
