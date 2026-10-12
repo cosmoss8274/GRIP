@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "purpose": "CPU source-relocation equivalence on three synthetic inputs",
+  "trained_weights_used": false,
+  "external_datasets_used": false,
+  "biological_benchmark": false,
+  "scientific_benchmark": false,
+  "scope": "Exact comparison of default configuration, copied random model state, encoded batches, and forward outputs; no claim about biological accuracy or trained-model performance.",
+  "device": "cpu",
+  "seed": 712,
+  "comparison": "torch.equal with finite tensors; no numerical tolerance",
+  "model_state": "seeded random initialization copied strictly from restored source to packaged model",
+  "status": "passed",
+  "source_reconstruction": {
+    "manifest": "src/grip_models/source_changes.json",
+    "manifest_sha256": "64c33665ece253074d1d1e9dc7174f310c2a82eaed2e2203237ab4dcba029307",
+    "private_snapshot_required": false,
+    "files_verified": 6,
+    "import_relocations_reversed": 5,
+    "files": [
+      {
+        "packaged_file": "src/grip_models/sequence.py",
+        "restored_filename": "test_energy_nomean_newdata_fix_120.py",
+        "packaged_sha256": "880ffe2cc609029c0828ea38a3e679dafc1d5f8e951c429da35081190364c67b",
+        "restored_original_sha256": "90c87088363230a7fd25108a69943ac78e791052868217a672ac1e001dfb1700",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 2
+      },
+      {
+        "packaged_file": "src/grip_models/common_modules.py",
+        "restored_filename": "common_modules.py",
+        "packaged_sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1",
+        "restored_original_sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 0
+      },
+      {
+        "packaged_file": "src/grip_models/basic.py",
+        "restored_filename": "basic.py",
+        "packaged_sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9",
+        "restored_original_sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 0
+      },
+      {
+        "packaged_file": "src/grip_models/EvoMSA_flash.py",
+        "restored_filename": "EvoMSA_flash.py",
+        "packaged_sha256": "e6d82e11dd9d3dff0c8e1ae5de995f76594934123a893b042a507f1b8397ea27",
+        "restored_original_sha256": "5e15a4b34632f7440bfb4cdd89aae78fe9a013f8ec41aba8d2ce35f0a0c329e8",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 1
+      },
+      {
+        "packaged_file": "src/grip_models/EvoPair_flash.py",
+        "restored_filename": "EvoPair_flash.py",
+        "packaged_sha256": "2e0b7b29bb94200875be9e7bada42c928006a2b607ccced1a7a47b86538ffdd6",
+        "restored_original_sha256": "9b8620bd8beabb048a44ac96f65811689b89f6ba83e79c9fa5acdc2c549dbff8",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 1
+      },
+      {
+        "packaged_file": "src/grip_models/evoformer_fast.py",
+        "restored_filename": "evoformer_fast.py",
+        "packaged_sha256": "49a3dded521fdd2fecc6e2a982305f4ebeb5323dcc1c6a60127fc452f75f1ea4",
+        "restored_original_sha256": "0df3f87be2d6c4aca738a2766f55b452d6d776b3853b11d30b1321f7d05d87df",
+        "original_sha256_matches_manifest": true,
+        "import_relocations_reversed": 1
+      }
+    ]
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "dependencies": {
+      "torch": "2.6.0",
+      "numpy": "1.26.3",
+      "pandas": "2.2.3",
+      "scipy": "1.13.1",
+      "scikit-learn": "1.6.1",
+      "einops": "0.8.1",
+      "biopython": "1.85"
+    },
+    "torch_threads": 1,
+    "torch_interop_threads": 1
+  },
+  "default_configurations_identical": true,
+  "state_tensors_identical": 290,
+  "cases": [
+    {
+      "index": 0,
+      "synthetic_input": {
+        "epitope_sequence": "AAAAAAAA",
+        "mhc": "ACDEFGHIK",
+        "l_v": "",
+        "l_j": "",
+        "h_v": "",
+        "cdr3_b": "",
+        "h_j": ""
+      },
+      "batch_tensors_identical": 28,
+      "output_tensors_identical": 6,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "index": 1,
+      "synthetic_input": {
+        "epitope_sequence": "CCCCCCCCC",
+        "mhc": "ACDEFGHIK",
+        "l_v": "",
+        "l_j": "",
+        "h_v": "",
+        "cdr3_b": "ACDE",
+        "h_j": ""
+      },
+      "batch_tensors_identical": 28,
+      "output_tensors_identical": 6,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "index": 2,
+      "synthetic_input": {
+        "epitope_sequence": "GGGGGGGG",
+        "mhc": "",
+        "l_v": "",
+        "l_j": "",
+        "h_v": "",
+        "cdr3_b": "ACDE",
+        "h_j": ""
+      },
+      "batch_tensors_identical": 28,
+      "output_tensors_identical": 6,
+      "maximum_absolute_difference": 0.0
+    }
+  ]
+}
