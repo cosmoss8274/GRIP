@@ -1,23 +1,23 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from . import EvoPair_flash, EvoMSA_flash
+from . import pair, msa
 
 
 class EvoBlock(nn.Module):
     def __init__(self,m_dim,z_dim,docheck=False):
         super(EvoBlock,self).__init__()
-        self.msa_row=EvoMSA_flash.MSARow(m_dim,z_dim)
-        #self.msa_col=EvoMSA_flash.MSACol(m_dim)
-        self.msa_trans=EvoMSA_flash.MSATrans(m_dim)
+        self.msa_row=msa.MSARow(m_dim,z_dim)
+        #self.msa_col=msa.MSACol(m_dim)
+        self.msa_trans=msa.MSATrans(m_dim)
 
-        self.msa_opm=EvoMSA_flash.MSAOPM(m_dim,z_dim)
+        self.msa_opm=msa.MSAOPM(m_dim,z_dim)
 
-        self.pair_triout=EvoPair_flash.TriOut(z_dim)
-        self.pair_triin =EvoPair_flash.TriIn(z_dim)
-        #self.pair_tristart=EvoPair_flash.TriAttStart(z_dim)
-        #self.pair_triend  =EvoPair_flash.TriAttEnd(z_dim)#占内存
-        self.pair_trans = EvoPair_flash.PairTrans(z_dim)
+        self.pair_triout=pair.TriOut(z_dim)
+        self.pair_triin =pair.TriIn(z_dim)
+        #self.pair_tristart=pair.TriAttStart(z_dim)
+        #self.pair_triend  =pair.TriAttEnd(z_dim)#占内存
+        self.pair_trans = pair.PairTrans(z_dim)
         self.docheck=docheck
 
 

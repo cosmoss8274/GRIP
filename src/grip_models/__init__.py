@@ -1,4 +1,4 @@
-"""GRIP core model, strict input adapters, and explicit checkpoint loading.
+"""GRIP core model, sequence encoding, and pretrained weights.
 
 Importing this package does not import model dependencies or load checkpoints.
 """
@@ -7,16 +7,17 @@ from importlib import import_module
 
 __all__ = [
     "BaseEnergyModel", "TrainingDataGenerator", "load_config",
-    "prepare_record", "score_record", "load_weights",
+    "prepare_record", "score_record", "load_weights", "load_pretrained",
 ]
 
 _EXPORTS = {
-    "BaseEnergyModel": (".sequence", "myModel"),
-    "TrainingDataGenerator": (".sequence", "DataGenerator"),
+    "BaseEnergyModel": (".model.energy", "BaseEnergyModel"),
+    "TrainingDataGenerator": (".data", "SequenceDataset"),
     "load_config": (".inference", "load_config"),
     "prepare_record": (".inference", "prepare_record"),
     "score_record": (".inference", "score_record"),
     "load_weights": (".checkpoints", "load_weights"),
+    "load_pretrained": (".pretrained", "load_pretrained"),
 }
 
 

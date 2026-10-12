@@ -1,22 +1,30 @@
+"""Pairwise triangle and transition layers."""
+
+import logging
+import math
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from . import basic
-import math
 
-# m : N L 32  
+from . import primitives
+
+
+logger = logging.getLogger(__name__)
+
+
 class TriOut(nn.Module):
     def __init__(self,z_dim,c=32):
         super(TriOut,self).__init__()
         self.z_dim = z_dim
         self.norm =nn.LayerNorm(z_dim)
         self.onorm =nn.LayerNorm(c)
-        self.alinear=basic.Linear(z_dim,c)
-        self.blinear=basic.Linear(z_dim,c)
-        self.aglinear=basic.Linear(z_dim,c)
-        self.bglinear=basic.Linear(z_dim,c)
-        self.glinear =basic.Linear(z_dim,z_dim)
-        self.olinear=basic.Linear(c,z_dim)
+        self.alinear=primitives.Linear(z_dim,c)
+        self.blinear=primitives.Linear(z_dim,c)
+        self.aglinear=primitives.Linear(z_dim,c)
+        self.bglinear=primitives.Linear(z_dim,c)
+        self.glinear =primitives.Linear(z_dim,z_dim)
+        self.olinear=primitives.Linear(c,z_dim)
 
     def forward(self,z):
         z = self.norm(z)
@@ -34,12 +42,12 @@ class TriIn(nn.Module):
         self.z_dim = z_dim
         self.norm =nn.LayerNorm(z_dim)
         self.onorm =nn.LayerNorm(c)
-        self.alinear=basic.Linear(z_dim,c)
-        self.blinear=basic.Linear(z_dim,c)
-        self.aglinear=basic.Linear(z_dim,c)
-        self.bglinear=basic.Linear(z_dim,c)
-        self.glinear =basic.Linear(z_dim,z_dim)
-        self.olinear=basic.Linear(c,z_dim)
+        self.alinear=primitives.Linear(z_dim,c)
+        self.blinear=primitives.Linear(z_dim,c)
+        self.aglinear=primitives.Linear(z_dim,c)
+        self.bglinear=primitives.Linear(z_dim,c)
+        self.glinear =primitives.Linear(z_dim,z_dim)
+        self.olinear=primitives.Linear(c,z_dim)
 
     def forward(self,z):
         z = self.norm(z)
@@ -60,12 +68,12 @@ class TriAttStart(nn.Module):
         self.c = c
         self.sq_c = 1/math.sqrt(c)
         self.norm=nn.LayerNorm(z_dim)
-        self.qlinear=basic.Linear(z_dim,c*N_head)
-        self.klinear=basic.Linear(z_dim,c*N_head)
-        self.vlinear=basic.Linear(z_dim,c*N_head)
-        self.blinear=basic.Linear(z_dim,N_head)
-        self.glinear=basic.Linear(z_dim,c*N_head)
-        self.olinear=basic.Linear(c*N_head,z_dim)
+        self.qlinear=primitives.Linear(z_dim,c*N_head)
+        self.klinear=primitives.Linear(z_dim,c*N_head)
+        self.vlinear=primitives.Linear(z_dim,c*N_head)
+        self.blinear=primitives.Linear(z_dim,N_head)
+        self.glinear=primitives.Linear(z_dim,c*N_head)
+        self.olinear=primitives.Linear(c*N_head,z_dim)
 
     def forward(self,z_, mask= True):#z:b,l,l, z_dim
         B, L1,L2,D=z_.shape
@@ -75,7 +83,7 @@ class TriAttStart(nn.Module):
         v = self.vlinear(z).reshape(B,L1,L2,self.N_head,self.c)
         b = self.blinear(z)
         att = torch.einsum('oblhc,obkhc->oblkh',q,k)*self.sq_c + b[:,None,:,:,:]#o is added batch dim
-        print("The attention shape for pair is:", att.shape)
+        logger.debug('%s %s', "The attention shape for pair is:", att.shape)
        
         att = F.softmax(att,dim=3)
 
@@ -92,12 +100,12 @@ class TriAttEnd(nn.Module):
         self.c = c
         self.sq_c = 1/math.sqrt(c)
         self.norm=nn.LayerNorm(z_dim)
-        self.qlinear=basic.Linear(z_dim,c*N_head)
-        self.klinear=basic.Linear(z_dim,c*N_head)
-        self.vlinear=basic.Linear(z_dim,c*N_head)
-        self.blinear=basic.Linear(z_dim,N_head)
-        self.glinear=basic.Linear(z_dim,c*N_head)
-        self.olinear=basic.Linear(c*N_head,z_dim)
+        self.qlinear=primitives.Linear(z_dim,c*N_head)
+        self.klinear=primitives.Linear(z_dim,c*N_head)
+        self.vlinear=primitives.Linear(z_dim,c*N_head)
+        self.blinear=primitives.Linear(z_dim,N_head)
+        self.glinear=primitives.Linear(z_dim,c*N_head)
+        self.olinear=primitives.Linear(c*N_head,z_dim)
 
     def forward(self,z_,mask=True):
         B,L1,L2,D=z_.shape
@@ -107,7 +115,7 @@ class TriAttEnd(nn.Module):
         v = self.vlinear(z).reshape(B,L1,L2,self.N_head,self.c)
         b = self.blinear(z)
         att = torch.einsum('oblhc,okbhc->oblkh',q,k)*self.sq_c + b[:,None,:,:,:].permute(0,1,3,2,4)
-        print(att.shape)
+        logger.debug(att.shape)
 
 
         att = F.softmax(att,dim=3)
@@ -136,8 +144,8 @@ class PairTrans(nn.Module):
         self.z_dim=z_dim
         self.c_expand=c_expand
         self.norm = nn.LayerNorm(z_dim)
-        self.linear1=basic.Linear(z_dim,z_dim*c_expand)
-        self.linear2=basic.Linear(z_dim*c_expand,z_dim)
+        self.linear1=primitives.Linear(z_dim,z_dim*c_expand)
+        self.linear2=primitives.Linear(z_dim*c_expand,z_dim)
     def forward(self,z):
         a = self.linear1(self.norm(z))
         a = self.linear2(F.relu(a))
