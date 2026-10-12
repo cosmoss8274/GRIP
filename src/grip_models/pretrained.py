@@ -72,18 +72,12 @@ def _asset(cache, filename, expected, *, local_files_only=False):
 def load_pretrained(
     name="mhc-i-energy", *, cache_dir=None, device="cpu", local_files_only=False
 ):
-    """Return a pretrained base energy model in evaluation mode and its config.
+    """Load a pretrained energy model and its configuration.
 
-    ``mhc-i-energy`` selects the MHC-I base energy checkpoint. Missing files
-    are downloaded from the fixed GRIP v0.1.0 GitHub release and verified before
-    use. ``cache_dir`` defaults to ``$XDG_CACHE_HOME/grip/v0.1.0`` or
-    ``~/.cache/grip/v0.1.0``. An existing valid cache works offline. Set
-    ``local_files_only=True`` to require cached files without network access.
-
-    ``device`` is passed to ``model.to(device)`` after strict weight loading.
-    The returned model can be used with ``score_record`` to obtain base-model
-    energies; it does not include a classification head or peptide sampling.
-    """
+    ``mhc-i-energy`` selects the released MHC-I model. Files are verified and
+    cached in ``$XDG_CACHE_HOME/grip/v0.1.0`` or ``~/.cache/grip/v0.1.0``.
+    Set ``local_files_only=True`` to use cached files offline. The model is
+    returned on ``device`` in evaluation mode."""
     if not isinstance(name, str) or name not in _MODELS:
         raise ValueError(f"Unknown pretrained model {name!r}. Available: mhc-i-energy")
     if cache_dir is None:

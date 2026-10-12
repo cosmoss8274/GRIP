@@ -1,4 +1,4 @@
-"""GRIP-CLA heads and the two reference energy-normalization profiles."""
+"""Sequence-based classification with energy and residue features."""
 
 import torch
 from torch import nn
@@ -11,7 +11,7 @@ class EnergyNormalization(nn.Module):
 
     def __init__(self):
         super().__init__()
-        # Retain the parameter name present in the fine-tuned checkpoints.
+        # Reserved parameter in classifier checkpoints.
         self.dummy = nn.Parameter(torch.zeros(1))
 
     def forward(self, energies, batch):
@@ -22,7 +22,7 @@ class EnergyNormalization(nn.Module):
 
 
 class ClassificationHead(nn.Module):
-    """The trained 465-feature classification head."""
+    """Classification head for 465 energy and residue features."""
 
     def __init__(self):
         super().__init__()
@@ -55,20 +55,11 @@ class ClassificationHead(nn.Module):
 
 
 class ClassifierModel(BaseEnergyModel):
-    """GRIP-CLA with a complete fine-tuned checkpoint-compatible architecture.
+    """GRIP-CLA for peptide–receptor classification.
 
-    ``profile='mhc'`` applies the MHC-I/MHC-II reference normalization once:
-    single-site energy divided by L and pair energy divided by L squared.
-    ``profile='tcr_legacy'`` preserves the two successive normalizations used
-    in the original TCR benchmark. Neither profile selects weights or converts
-    allele names to sequences.
-
-    In evaluation mode, ``forward`` returns the base outputs (including raw
-    ``energies``), the final head inputs in ``normalized_energies``, and
-    ``logit`` and ``score`` tensors of shape [B]. ``score`` is sigmoid(logit).
-    Reference evaluations use one record per batch, avoiding context padding.
-    The historical classification training objectives are not implemented here.
-    """
+    ``mhc`` normalizes single-site and pair energies by L and L²;
+    ``tcr_legacy`` applies this normalization twice. Outputs include energies,
+    normalized energies, logits and sigmoid scores."""
 
     def __init__(self, config, *, profile):
         if profile not in ("mhc", "tcr_legacy"):

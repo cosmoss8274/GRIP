@@ -1,4 +1,4 @@
-"""Encode sequence records and evaluate single-record energies."""
+"""Sequence encoding and energy-model inference."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ _FIXED_VALUES = {
     ("model", "embeddings", "seq_info_dim"): 21,
     ("data", "n_channels_seq"): 21,
 }
-# SequenceDataset uses getattr(config.data, 'max_length', 500).
+# Match the dataset default.
 _REFERENCE_MAX_LENGTH = 500
 
 
@@ -127,12 +127,11 @@ def _validated_config(config):
 
 
 def load_config(config_path=None):
-    """Load reference defaults plus a strictly typed, known-key JSON override.
+    """Load model defaults with optional JSON overrides.
 
-    None preserves the four-layer defaults. Optional model.num_layers selects
-    the trunk depth, and data.max_length limits input length. Weight loading
-    requires an exact match to the selected architecture.
-    """
+    ``model.num_layers`` sets the trunk depth (default: 4);
+    ``data.max_length`` sets the input length limit. The model architecture
+    must match the checkpoint."""
     supplied = None
     if config_path is not None:
         with Path(config_path).open("r", encoding="utf-8") as stream:
@@ -151,13 +150,11 @@ def load_config(config_path=None):
 
 
 def prepare_record(record, config):
-    """Return one CPU batch using SequenceDataset and its collate_fn.
+    """Encode a peptide and its MHC/TCR context as a single CPU batch.
 
-    Required: a nonempty epitope_sequence and at least one nonempty MHC/TCR
-    component. Optional components omitted or set to None become empty strings.
-    Every provided sequence must use the standard 20 uppercase amino acids.
-    All components must fit data.max_length (or the reference fallback, 500).
-    """
+    Sequences use the 20 standard uppercase amino acids. Supply a nonempty
+    ``epitope_sequence`` and at least one receptor component; omit unused
+    components. Each sequence must fit ``data.max_length`` (default: 500)."""
     if not isinstance(record, Mapping):
         raise TypeError("record must be a mapping of canonical sequence fields")
     unknown = set(record) - set(_FIELDS)
@@ -222,11 +219,9 @@ def _evaluation_device(model):
 
 
 def score_record(model, record, config):
-    """Return single, pair and total energies from a model in evaluation mode.
+    """Return single-site, pairwise and total energies for one record.
 
-    The record is encoded on the model's device. Energies retain the reference
-    scale and are not binding probabilities.
-    """
+    The model must be in evaluation mode. Outputs are energy scores."""
     import torch
 
     device = _evaluation_device(model)

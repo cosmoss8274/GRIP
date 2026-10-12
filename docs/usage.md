@@ -1,21 +1,21 @@
 # Sequence energy model
 
-`grip_models` provides sequence encoding, the core neural network and single-record scoring. `load_pretrained("mhc-i-energy")` loads the MHC-I base energy checkpoint. Scoring returns `single` and `pair` energy contributions and their sum, `total`. These energies are not calibrated binding probabilities.
+Use `load_pretrained("mhc-i-energy")` to load the MHC-I energy model and `score_record` to evaluate a peptide in its receptor context.
 
 ## Prepare a record
 
-Save one JSON object as `record.json`, with a peptide in `epitope_sequence` and an MHC pseudosequence in `mhc`. The released MHC-I checkpoint expects a 34-residue pseudosequence in the original input format. The following short, synthetic strings illustrate the JSON format only; replace them with your peptide and the appropriate MHC pseudosequence for scoring:
+Save a peptide in `epitope_sequence` and its 34-residue MHC pseudosequence in `mhc`. The synthetic strings below illustrate the JSON format; replace them with the sequences to be scored:
 
 ```json
 {
   "epitope_sequence": "AAAAAAAA",
-  "mhc": "ACDEFGHIK"
+  "mhc": "ACDEFGHIKLMNPQRSTVWYACDEFGHIKLMNPQ"
 }
 ```
 
-Use uppercase standard amino-acid letters without spaces. The encoder accepts sequences, not HLA allele names. Each component must fit `data.max_length`, which defaults to 500.
+Use uppercase standard amino-acid letters without spaces. Each sequence must fit `data.max_length`, which defaults to 500.
 
-For other compatible local checkpoints, the encoder also accepts TCR sequence components named `l_v`, `l_j`, `h_v`, `cdr3_b` and `h_j`, in the original training format. At least one MHC or TCR component must be present. Omitted context fields, empty strings and `null` indicate absent components.
+For TCR checkpoints, supply the corresponding `l_v`, `l_j`, `h_v`, `cdr3_b` and `h_j` components. Each record requires at least one MHC or TCR component. Omitted fields, empty strings and `null` denote absent components.
 
 ## Load and score
 
@@ -49,7 +49,7 @@ After the files are cached, require offline loading with:
 model, config = load_pretrained(cache_dir="model-cache", local_files_only=True)
 ```
 
-The example accepts the same options as `--cache-dir model-cache --local-files-only`. A missing file raises an error without attempting a download. Remove a damaged cached file and load again to download a fresh copy.
+The command-line equivalents are `--cache-dir model-cache --local-files-only`.
 
 ## Try input encoding
 
@@ -58,7 +58,7 @@ python examples/core.py encode
 python examples/core.py encode --record record.json
 ```
 
-Without `--record`, the example uses the synthetic strings shown above. It reports component lengths and the encoded tensor count, without loading weights or calculating an energy.
+Without `--record`, the command uses a built-in synthetic record and reports component lengths and tensor count.
 
 Encoding is also available in Python:
 
@@ -79,7 +79,7 @@ python examples/core.py score --record record.json --checkpoint model.pt --confi
 
 Omit `--config` to use the core defaults. `model.num_layers` can be set in the configuration to match the checkpoint's trunk depth. If weights are stored under a top-level key, add that exact key, for example `--state-dict-key model_state_dict`. Use `--device cuda:0` for a GPU. Run `python examples/core.py score --help` for all options.
 
-For lower-level loading, `load_weights(model, path, sha256=..., state_dict_key=None)` accepts a local state dictionary and its SHA-256 digest. The command-line example computes the digest of the supplied local file.
+`load_weights(model, path, sha256=..., state_dict_key=None)` loads a local state dictionary using its file checksum. The command-line tool computes this checksum automatically.
 
 | Public name | Purpose |
 | --- | --- |

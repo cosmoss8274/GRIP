@@ -1,8 +1,4 @@
-"""Adapter contract tests with a tiny synthetic upstream stand-in.
-
-These tests exercise loading, head dispatch and feature/output handling. They do
-not substitute for numerical comparison against CarbonDesign and its ESM model.
-"""
+"""Inverse-model loading and inference tests with a synthetic backbone."""
 
 import copy
 import hashlib

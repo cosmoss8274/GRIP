@@ -1,8 +1,4 @@
-"""Explicit, checksum-verified loading for tensor-only model state dictionaries.
-
-This module imports only the standard library until ``load_weights`` is called.
-It neither identifies publication weights nor chooses a checkpoint for a caller.
-"""
+"""Checkpoint verification and model weight loading."""
 
 from collections.abc import Mapping
 import hashlib
@@ -27,23 +23,11 @@ def _file_signature(handle):
 
 
 def load_weights(model, checkpoint_path, *, sha256, state_dict_key=None):
-    """Load one explicitly named local checkpoint after complete preflight.
+    """Load a local checkpoint after checksum and tensor validation.
 
-    ``sha256`` must be the expected 64-character hexadecimal digest supplied by
-    the caller. ``state_dict_key=None`` means the checkpoint itself is the state
-    dictionary; a nonempty string selects that exact top-level key. No schema,
-    prefix, model head, checkpoint candidate or device is inferred.
-
-    Deserialization uses ``torch.load(weights_only=True, map_location='cpu')``.
-    The checksum and deserializer read the same open file handle. File metadata
-    is checked for changes before any model state is assigned. All keys, tensor
-    types, shapes, dtypes and layouts are checked before a strict state load.
-    Meta tensors are rejected because they cannot provide concrete weights.
-
-    The model's training flag and parameter identities are left unchanged.
-    Returns the verified digest, absolute input path and selected key. Errors
-    from safe deserialization propagate; there is no unsafe loading fallback.
-    """
+    ``sha256`` is the expected file digest. ``state_dict_key`` selects a
+    top-level field when the checkpoint contains more than a state dictionary.
+    Returns the verified digest, absolute path and selected key."""
     if not isinstance(sha256, str) or re.fullmatch(r"[0-9a-fA-F]{64}", sha256) is None:
         raise ValueError("sha256 must be an expected 64-character hexadecimal digest")
     if state_dict_key is not None and (
@@ -61,8 +45,7 @@ def load_weights(model, checkpoint_path, *, sha256, state_dict_key=None):
     absolute_path = os.path.abspath(local_path)
     expected_digest = sha256.lower()
 
-    # Nonblocking open prevents a FIFO supplied as a path from hanging before
-    # the regular-file check. It has no effect on reads from regular files.
+    # Check the file type without blocking on a FIFO.
     flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
     descriptor = os.open(absolute_path, flags)
     with os.fdopen(descriptor, "rb") as handle:

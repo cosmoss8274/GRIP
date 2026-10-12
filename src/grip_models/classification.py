@@ -1,4 +1,4 @@
-"""Explicit checkpoint loading and single-record GRIP-CLA inference."""
+"""GRIP classifier loading and sequence inference."""
 
 from .checkpoints import load_weights
 from .inference import _evaluation_device, load_config, prepare_record
@@ -13,15 +13,11 @@ def load_classifier(
     state_dict_key=None,
     device="cpu",
 ):
-    """Return a strictly loaded classifier in evaluation mode and its config.
+    """Load a classifier checkpoint and return the model and configuration.
 
-    The caller supplies one local checkpoint, its expected SHA-256, and the
-    ``mhc`` or ``tcr_legacy`` calculation profile. The complete fine-tuned
-    state, including the backbone and classification head, is required. No model is
-    selected, downloaded or substituted automatically. ``state_dict_key``
-    selects an explicitly named checkpoint field; by default the file itself
-    must be the state dictionary.
-    """
+    ``profile`` selects ``mhc`` or ``tcr_legacy`` normalization. ``sha256``
+    verifies the file; ``state_dict_key`` selects a nested state dictionary.
+    The model is returned on ``device`` in evaluation mode."""
     from .model.classifier import ClassifierModel
 
     config = load_config(config_path)
@@ -32,17 +28,11 @@ def load_classifier(
 
 
 def classify_record(model, record, config):
-    """Return ``{'logit': float, 'score': float}`` for one canonical record.
+    """Classify one peptide–receptor sequence record.
 
-    Use the sequence fields accepted by ``prepare_record``. The receptor
-    representation must be supplied explicitly; allele names and modified
-    peptides are not rewritten or guessed. This entry point therefore does
-    not reproduce historical benchmarks that encoded allele-label strings as
-    amino acids. Such replays require their original encoded batches.
-
-    The model and its submodules must already be in evaluation mode. The
-    returned sigmoid score has no imposed threshold or calibration transform.
-    """
+    Uses the sequence fields accepted by ``prepare_record``. Returns scalar
+    ``logit`` and ``score`` values, where ``score = sigmoid(logit)``. The model
+    must be in evaluation mode."""
     import torch
     from .model.classifier import ClassifierModel
 
