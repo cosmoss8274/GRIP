@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="520" viewBox="0 0 1440 520" role="img" aria-labelledby="title desc">
+  <title id="title">GRIP core model overview</title>
+  <desc id="desc">A peptide and MHC or TCR sequence context are encoded by the reference data generator. The core model updates single and pair representations and returns single, pair, and total energy terms. Checkpoints are explicitly selected and verified before inference.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#658087"/></marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #123b48; }
+      .step { font-size: 16px; font-weight: 700; letter-spacing: 2px; fill: #61777d; }
+      .heading { font-size: 25px; font-weight: 700; }
+      .body { font-size: 20px; }
+      .small { font-size: 17px; fill: #546b72; }
+      .flow { stroke: #658087; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1440" height="520" rx="20" fill="#fafbfa"/>
+  <text x="46" y="52" font-size="28" font-weight="700">From sequence context to energy</text>
+  <text x="46" y="83" class="small">Core model library</text>
+  <g id="input">
+    <text x="46" y="130" class="step">01 / INPUT</text>
+    <rect x="46" y="153" width="292" height="198" rx="12" fill="#fff" stroke="#cbd9dc"/>
+    <rect x="46" y="153" width="6" height="198" rx="3" fill="#f07863"/>
+    <text x="70" y="194" class="heading">Peptide</text>
+    <text x="70" y="226" class="small">Amino-acid sequence</text>
+    <path d="M70 249H311" stroke="#e2e9e9"/>
+    <text x="70" y="285" class="heading">Receptor context</text>
+    <text x="70" y="317" class="small">MHC and/or TCR sequences</text>
+  </g>
+  <path d="M344 252H382" class="flow"/>
+  <g id="encoding">
+    <text x="392" y="130" class="step">02 / ENCODING</text>
+    <rect x="392" y="153" width="288" height="198" rx="12" fill="#fff" stroke="#cbd9dc"/>
+    <text x="416" y="198" class="heading">Reference encoding</text>
+    <text x="416" y="240" class="body">Sequence features</text>
+    <text x="416" y="276" class="body">Component lengths</text>
+    <text x="416" y="312" class="body">Peptide residue indices</text>
+  </g>
+  <path d="M686 252H724" class="flow"/>
+  <g id="model">
+    <text x="734" y="130" class="step">03 / MODEL</text>
+    <rect x="734" y="153" width="306" height="198" rx="12" fill="#eaf2f1" stroke="#b8cece"/>
+    <text x="758" y="198" class="heading">Coupled features</text>
+    <rect x="758" y="225" width="258" height="42" rx="6" fill="#fff"/>
+    <text x="777" y="253" class="body">Single-residue features</text>
+    <rect x="758" y="283" width="258" height="42" rx="6" fill="#fff"/>
+    <text x="777" y="311" class="body">Residue-pair features</text>
+  </g>
+  <path d="M1046 252H1084" class="flow"/>
+  <g id="output">
+    <text x="1094" y="130" class="step">04 / OUTPUT</text>
+    <rect x="1094" y="153" width="300" height="198" rx="12" fill="#fff" stroke="#cbd9dc"/>
+    <text x="1118" y="198" class="heading">Energy terms</text>
+    <text x="1118" y="244" class="body">Single</text>
+    <text x="1118" y="280" class="body">Pair</text>
+    <text x="1118" y="316" class="body" font-weight="700">Total</text>
+    <circle cx="1355" cy="238" r="7" fill="#f07863"/>
+    <circle cx="1355" cy="274" r="7" fill="#0b5663"/>
+    <circle cx="1355" cy="310" r="7" fill="#123b48"/>
+  </g>
+  <g id="weights">
+    <rect x="734" y="405" width="306" height="61" rx="10" fill="#fff" stroke="#b8cece"/>
+    <text x="887" y="431" text-anchor="middle" font-size="19" font-weight="700">Explicit checkpoint + SHA-256</text>
+    <text x="887" y="454" text-anchor="middle" class="small">Strict parameter matching</text>
+    <path d="M887 399V359" class="flow"/>
+  </g>
+  <text x="46" y="428" class="small">One record per inference call.</text>
+  <text x="46" y="455" class="small">Raw model energies; no probability calibration is applied.</text>
+</svg>
