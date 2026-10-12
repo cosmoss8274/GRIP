@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source_branch": "test_energy_nomean_newdata_fix_120",
+  "scope": "Original six-file import closure; only the listed local imports are relocated. No model, head, data encoding, configuration, scoring or numeric changes.",
+  "ast_fingerprint_format": "sha256(UTF-8 ast.dump(ast.parse(source), include_attributes=False))",
+  "files": [
+    {
+      "source": ".work/research_snapshot/test_energy_nomean_newdata_fix_120.py",
+      "target": "src/grip_models/sequence.py",
+      "original_source_sha256": "90c87088363230a7fd25108a69943ac78e791052868217a672ac1e001dfb1700",
+      "original_ast_sha256": "2fa576af32891c82bc330cf9588e447ca0ee62f85e74f6af6ea31032c76d86a0",
+      "packaged_source_sha256": "880ffe2cc609029c0828ea38a3e679dafc1d5f8e951c429da35081190364c67b",
+      "import_relocations": [
+        {
+          "line": 31,
+          "before": "from common_modules import Linear, LayerNorm",
+          "after": "from .common_modules import Linear, LayerNorm"
+        },
+        {
+          "line": 35,
+          "before": "from evoformer_fast import Evoformer",
+          "after": "from .evoformer_fast import Evoformer"
+        }
+      ]
+    },
+    {
+      "source": ".work/research_snapshot/common_modules.py",
+      "target": "src/grip_models/common_modules.py",
+      "original_source_sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1",
+      "original_ast_sha256": "7dcff9cefc34c86d67350d986caa0c9eeac0a1f7f435dbad03b8d13128165d4a",
+      "packaged_source_sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1",
+      "import_relocations": []
+    },
+    {
+      "source": ".work/research_snapshot/basic.py",
+      "target": "src/grip_models/basic.py",
+      "original_source_sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9",
+      "original_ast_sha256": "7283b8db4055fdebea36cc3ff6ee68312f28d069536d671189a5bb704da8535a",
+      "packaged_source_sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9",
+      "import_relocations": []
+    },
+    {
+      "source": ".work/research_snapshot/EvoMSA_flash.py",
+      "target": "src/grip_models/EvoMSA_flash.py",
+      "original_source_sha256": "5e15a4b34632f7440bfb4cdd89aae78fe9a013f8ec41aba8d2ce35f0a0c329e8",
+      "original_ast_sha256": "a7caa814560873b750cad134a8fc3b3e84217d8d676f3e624df043b5f69563e2",
+      "packaged_source_sha256": "e6d82e11dd9d3dff0c8e1ae5de995f76594934123a893b042a507f1b8397ea27",
+      "import_relocations": [
+        {
+          "line": 5,
+          "before": "import basic",
+          "after": "from . import basic"
+        }
+      ]
+    },
+    {
+      "source": ".work/research_snapshot/EvoPair_flash.py",
+      "target": "src/grip_models/EvoPair_flash.py",
+      "original_source_sha256": "9b8620bd8beabb048a44ac96f65811689b89f6ba83e79c9fa5acdc2c549dbff8",
+      "original_ast_sha256": "a7b1c61018a5bf1d52a3cc61ab8fd4dc54c560fdb9e6a7ee1e5050386aa04205",
+      "packaged_source_sha256": "2e0b7b29bb94200875be9e7bada42c928006a2b607ccced1a7a47b86538ffdd6",
+      "import_relocations": [
+        {
+          "line": 4,
+          "before": "import basic",
+          "after": "from . import basic"
+        }
+      ]
+    },
+    {
+      "source": ".work/research_snapshot/evoformer_fast.py",
+      "target": "src/grip_models/evoformer_fast.py",
+      "original_source_sha256": "0df3f87be2d6c4aca738a2766f55b452d6d776b3853b11d30b1321f7d05d87df",
+      "original_ast_sha256": "8d2045c7d2988a93cc1fb808dd8768db0d5f7e5a5d6cb0c968e6bda334657a4c",
+      "packaged_source_sha256": "49a3dded521fdd2fecc6e2a982305f4ebeb5323dcc1c6a60127fc452f75f1ea4",
+      "import_relocations": [
+        {
+          "line": 4,
+          "before": "import EvoPair_flash, EvoMSA_flash",
+          "after": "from . import EvoPair_flash, EvoMSA_flash"
+        }
+      ]
+    }
+  ],
+  "ast_fingerprint_python": "3.12"
+}
