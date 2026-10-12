@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grip-models"
-version = "0.1.0"
-description = "GRIP core model for peptide–MHC–TCR interactions"
+version = "0.2.0"
+description = "GRIP models for peptide–MHC–TCR interactions"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -15,11 +15,12 @@ dependencies = [
   "torch>=2.6",
   "numpy",
   "pandas",
-  "scipy",
-  "scikit-learn",
   "einops",
   "biopython",
 ]
+
+[project.optional-dependencies]
+inverse = ["fair-esm", "ml-collections", "dm-tree"]
 
 [project.urls]
 Repository = "https://github.com/cosmoss8274/GRIP"

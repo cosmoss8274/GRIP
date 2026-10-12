@@ -25,7 +25,11 @@ class BaseEnergyModel(nn.Module):
         self.relpos_k = 32
         self.linear_single_projection = nn.Linear(self.seq_channel, self.seq_channel)
         self.linear_pair_projection = nn.Linear(self.pair_channel, self.pair_channel)
-        self.evmodel = Evoformer(self.seq_channel, self.pair_channel)
+        self.evmodel = Evoformer(
+            self.seq_channel,
+            self.pair_channel,
+            num_layers=getattr(config.model, "num_layers", 4),
+        )
         self.num_frequencies = self.seq_channel // 2
         self.linear_abs_pos = nn.Linear(self.seq_channel, self.seq_channel)
         self.num_types = 7
@@ -117,43 +121,29 @@ class BaseEnergyModel(nn.Module):
             return self.evmodel(single, pair)
 
     def calculate_energies(self, headers, representations, batch):
-        """Score observed residues using the checkpoint's energy convention.
+        """Sum single-site and pairwise negative log probabilities.
 
-        Single terms are negative log probabilities summed over peptide sites.
-        Pair terms use a joint softmax over amino-acid pairs, then sum all
-        ordered site pairs with weight 1/2, including the diagonal.
+        E_single = -sum_i log p_i(x_i).
+        E_pair = -1/2 sum_ij log p_ij(x_i, x_j), including diagonal terms.
+        Each pair distribution uses a joint softmax over A*A residue pairs.
+        Neither term is normalized by peptide length.
         """
         seq_logits = headers["seqhead"]["logits"]
         pair_logits = headers["pairhead"]["logits"]
         labels = batch["aatype"]
-        if seq_logits.ndim == 4 and seq_logits.shape[1] == 1:
+        if seq_logits.ndim == 4:
             seq_logits = seq_logits.squeeze(1)
-        if labels.ndim != 2 or seq_logits.ndim != 3:
-            raise ValueError("Expected labels [B, L] and sequence logits [B, L, A].")
-        batch_size, length = labels.shape
-        if length == 0 or tuple(seq_logits.shape[:2]) != (batch_size, length):
+        batch_size, length, n_classes = seq_logits.shape
+        if length == 0 or labels.shape != (batch_size, length):
             raise ValueError(
                 "Sequence logits and labels must describe the same nonempty peptide."
             )
-        n_classes = seq_logits.shape[-1]
-        if pair_logits.ndim == 4:
-            expected = (batch_size, length, length, n_classes * n_classes)
-            if tuple(pair_logits.shape) != expected:
-                raise ValueError(
-                    f"Expected pair logits {expected}, got {tuple(pair_logits.shape)}."
-                )
-            pair_logits = pair_logits.view(
-                batch_size, length, length, n_classes, n_classes
-            )
-        elif tuple(pair_logits.shape) != (
-            batch_size,
-            length,
-            length,
-            n_classes,
-            n_classes,
+        if pair_logits.shape not in (
+            (batch_size, length, length, n_classes * n_classes),
+            (batch_size, length, length, n_classes, n_classes),
         ):
             raise ValueError(
-                "Pair logits must have shape [B, L, L, A*A] or [B, L, L, A, A]."
+                "Pair logits must match both peptide site axes and the residue alphabet."
             )
 
         log_probs = F.log_softmax(seq_logits, dim=-1)

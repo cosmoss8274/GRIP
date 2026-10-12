@@ -1,7 +1,6 @@
 """MSA attention, transition and outer-product layers."""
 
 import math
-from numpy import select
 import torch
 from torch import nn
 from torch.nn import functional as F

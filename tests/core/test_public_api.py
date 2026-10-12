@@ -39,8 +39,11 @@ class PublicApiTests(unittest.TestCase):
             sys.meta_path.insert(0, RejectModelImports())
             import grip_models
             assert grip_models.__all__ == [
-                'BaseEnergyModel', 'TrainingDataGenerator', 'load_config',
-                'prepare_record', 'score_record', 'load_weights', 'load_pretrained']
+                'BaseEnergyModel', 'ClassifierModel',
+                'SequenceDataset', 'TrainingDataGenerator', 'load_config',
+                'prepare_record', 'score_record', 'load_weights', 'load_pretrained',
+                'load_classifier', 'classify_record', 'load_inverse_model',
+                'inverse_logits']
             assert set(grip_models.__all__).issubset(dir(grip_models))
             assert 'grip_models.model.energy' not in sys.modules
             assert callable(grip_models.load_pretrained)

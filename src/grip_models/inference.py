@@ -1,13 +1,4 @@
-"""Sequence encoding and single-record energy scoring.
-
-Records use the original sequence field names. Sequences must already be
-canonical uppercase amino-acid strings; this module never cleans or rewrites
-them. It applies the reference max_length to every component as an API input
-constraint, including components not filtered by the original data generator.
-
-The caller supplies an already loaded model in evaluation mode. This module
-does not select weights, add heads, set evaluation mode, or configure ensembles.
-"""
+"""Encode sequence records and evaluate single-record energies."""
 
 from __future__ import annotations
 
@@ -80,6 +71,8 @@ def _merge_known(default, supplied, path=(), *, complete=False):
     allowed = set(default)
     if path == ("data",):
         allowed.add("max_length")
+    if path == ("model",):
+        allowed.add("num_layers")
     unknown = set(supplied) - allowed
     if unknown:
         raise ValueError(
@@ -93,9 +86,12 @@ def _merge_known(default, supplied, path=(), *, complete=False):
     for key, value in supplied.items():
         field_path = path + (key,)
         field = ".".join(field_path)
-        if path == ("data",) and key == "max_length":
+        if (path, key) in (
+            (("data",), "max_length"),
+            (("model",), "num_layers"),
+        ):
             if type(value) is not int or value <= 0:
-                raise ValueError("data.max_length must be a positive integer")
+                raise ValueError(f"{field} must be a positive integer")
             result[key] = value
             continue
         expected = default[key]
@@ -133,9 +129,9 @@ def _validated_config(config):
 def load_config(config_path=None):
     """Load reference defaults plus a strictly typed, known-key JSON override.
 
-    None preserves the original defaults exactly. data.max_length is the only
-    extra key allowed beyond that schema. Integer and floating-point fields
-    retain their original types; booleans are not accepted as integers.
+    None preserves the four-layer defaults. Optional model.num_layers selects
+    the trunk depth, and data.max_length limits input length. Weight loading
+    requires an exact match to the selected architecture.
     """
     supplied = None
     if config_path is not None:
@@ -190,11 +186,9 @@ def prepare_record(record, config):
         if len(value) > limit:
             raise ValueError(f"{field} exceeds max_length={limit}")
 
-    # Heavy dependencies are loaded only when this function is called.
     import pandas as pd
-    import torch
 
-    frame = pd.DataFrame([deepcopy(canonical)], columns=_FIELDS).copy(deep=True)
+    frame = pd.DataFrame([canonical], columns=_FIELDS)
     dataset = _data_module().SequenceDataset(
         [],
         None,
@@ -202,38 +196,12 @@ def prepare_record(record, config):
         checked_config,
         integrated_data_path=None,
     )
-    if len(dataset) != 1:
-        raise RuntimeError("Reference preprocessing did not retain exactly one record")
-    for field, value in canonical.items():
-        if dataset.data.iloc[0][field] != value:
-            raise RuntimeError(
-                f"Reference preprocessing changed accepted field {field}"
-            )
-    batch, target = dataset.collate_fn([dataset[0]])
-    if not isinstance(batch, dict) or "aatype" not in batch:
-        raise RuntimeError("Reference collation did not return aatype")
-    if not torch.equal(batch["aatype"], target):
-        raise RuntimeError("Reference aatype differs from the collated target")
-    if tuple(target.shape) != (1, len(canonical["epitope_sequence"])):
-        raise RuntimeError("Reference collation changed the target length")
-    for field in _FIELDS:
-        prefix = "epitope" if field == "epitope_sequence" else field
-        lengths = batch.get(prefix + "_lengths")
-        if not isinstance(lengths, torch.Tensor) or lengths.numel() != 1:
-            raise RuntimeError(f"Reference collation omitted lengths for {field}")
-        if lengths.item() != len(canonical[field]):
-            raise RuntimeError(f"Reference collation changed the length of {field}")
+    batch, _ = dataset.collate_fn([dataset[0]])
     return batch
 
 
-def score_record(model, record, config):
-    """Return single, pair, and total energies from a caller-supplied eval model.
-
-    No weights are loaded, no heads are created, and no model mode is changed.
-    All model parameters/buffers must share one non-meta device. Original model
-    This returns base-model energies, not calibrated
-    binding probabilities or an ensemble score.
-    """
+def _evaluation_device(model):
+    """Return the shared device of an evaluation-mode model."""
     import torch
 
     if not isinstance(model, torch.nn.Module):
@@ -242,15 +210,6 @@ def score_record(model, record, config):
         raise ValueError(
             "model and all submodules must already be in evaluation mode; call model.eval() explicitly"
         )
-    heads = getattr(model, "heads", None)
-    if not isinstance(heads, (Mapping, torch.nn.ModuleDict)):
-        raise ValueError("model.heads must be a mapping of existing head modules")
-    for name in ("seqhead", "pairhead"):
-        head = getattr(model, name, None)
-        if not isinstance(head, torch.nn.Module):
-            raise ValueError(f"model must contain an existing {name} module")
-        if name not in heads or heads[name] is not head:
-            raise ValueError(f"model.heads must reference the existing {name} module")
     devices = {
         tensor.device for tensor in list(model.parameters()) + list(model.buffers())
     }
@@ -259,10 +218,19 @@ def score_record(model, record, config):
     device = next(iter(devices))
     if device.type == "meta":
         raise ValueError("model parameters must reside on a materialized device")
+    return device
 
+
+def score_record(model, record, config):
+    """Return single, pair and total energies from a model in evaluation mode.
+
+    The record is encoded on the model's device. Energies retain the reference
+    scale and are not binding probabilities.
+    """
+    import torch
+
+    device = _evaluation_device(model)
     batch = prepare_record(record, config)
-    if not all(isinstance(value, torch.Tensor) for value in batch.values()):
-        raise RuntimeError("Reference batch must contain only tensors")
     batch = {key: value.to(device) for key, value in batch.items()}
     with torch.inference_mode():
         outputs = model(batch, compute_loss=False, compute_energy=True)

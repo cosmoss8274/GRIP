@@ -68,11 +68,6 @@ class LossHead(nn.Module):
         """Upper-triangle pair cross-entropy and the trained regularizers."""
         batch_size, length = labels.shape
         n_classes = seq_logits.shape[-1]
-        expected = (batch_size, length, length, n_classes * n_classes)
-        if tuple(pair_logits.shape) != expected:
-            raise ValueError(
-                f"Expected pair logits {expected}, got {tuple(pair_logits.shape)}."
-            )
         pair_mask = torch.triu(
             torch.ones(length, length, device=pair_logits.device, dtype=torch.bool),
             diagonal=1,
@@ -97,6 +92,12 @@ class LossHead(nn.Module):
         seq_logits = headers["seqhead"]["logits"]
         pair_logits = headers["pairhead"]["logits"]
         labels = batch["aatype"]
+        if seq_logits.ndim == 4:
+            seq_logits = seq_logits.squeeze(1)
+        if seq_logits.shape[:-1] != labels.shape:
+            raise ValueError(
+                "Sequence logits and labels must have matching batch and site axes."
+            )
         single = self._compute_single_loss(seq_logits, labels)
         pair = self._compute_pair_loss(
             pair_logits=pair_logits,

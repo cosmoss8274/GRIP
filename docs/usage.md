@@ -1,4 +1,4 @@
-# Using the core model
+# Sequence energy model
 
 `grip_models` provides sequence encoding, the core neural network and single-record scoring. `load_pretrained("mhc-i-energy")` loads the MHC-I base energy checkpoint. Scoring returns `single` and `pair` energy contributions and their sum, `total`. These energies are not calibrated binding probabilities.
 
@@ -77,7 +77,7 @@ Supply compatible base-model weights and the matching configuration:
 python examples/core.py score --record record.json --checkpoint model.pt --config config.json
 ```
 
-Omit `--config` to use the core defaults. If weights are stored under a top-level key, add that exact key, for example `--state-dict-key model_state_dict`. Use `--device cuda:0` for a GPU. Run `python examples/core.py score --help` for all options.
+Omit `--config` to use the core defaults. `model.num_layers` can be set in the configuration to match the checkpoint's trunk depth. If weights are stored under a top-level key, add that exact key, for example `--state-dict-key model_state_dict`. Use `--device cuda:0` for a GPU. Run `python examples/core.py score --help` for all options.
 
 For lower-level loading, `load_weights(model, path, sha256=..., state_dict_key=None)` accepts a local state dictionary and its SHA-256 digest. The command-line example computes the digest of the supplied local file.
 
@@ -89,7 +89,9 @@ For lower-level loading, `load_weights(model, path, sha256=..., state_dict_key=N
 | `BaseEnergyModel(config)` | Construct the base energy model |
 | `load_weights(model, path, sha256=..., state_dict_key=None)` | Load a matching local state dictionary |
 | `score_record(model, record, config)` | Return one record's energy values |
-| `TrainingDataGenerator` | Lower-level sequence dataset |
+| `SequenceDataset` | Lower-level sequence dataset |
+
+`TrainingDataGenerator` remains an alias for `SequenceDataset` for existing scripts. Classification and structure-conditioned logits use the [model interfaces](models.md).
 
 ## Development
 
