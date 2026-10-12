@@ -1,0 +1,6 @@
+include requirements-test.txt
+recursive-include docs *.md *.png *.pdf
+recursive-include examples *.py
+recursive-include tests *.py *.json
+recursive-include tools *.py
+global-exclude __pycache__ *.py[cod]

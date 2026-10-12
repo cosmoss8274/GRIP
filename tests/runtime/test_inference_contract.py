@@ -1,7 +1,7 @@
 """Real tensor/dataframe checks for the single-record adapter contract.
 
 Model calls use a small protocol stub. No original model is trained or executed,
-and no checkpoint is read. Encoding is compared with the original DataGenerator.
+and no checkpoint is read. Encoding is compared with SequenceDataset.
 """
 
 from copy import deepcopy
@@ -19,7 +19,8 @@ import pandas as pd
 import torch
 
 from grip_models import inference
-from grip_models import sequence as original
+from grip_models.configuration import load_config as reference_config
+from grip_models.data import SequenceDataset
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,12 +57,12 @@ class ConfigContractTests(unittest.TestCase):
             return inference.load_config(path)
 
     def test_none_preserves_all_original_defaults(self):
-        self.assertEqual(inference.load_config(), original.load_config(None))
-        self.assertEqual(inference.load_config(None), original.load_config(None))
+        self.assertEqual(inference.load_config(), reference_config(None))
+        self.assertEqual(inference.load_config(None), reference_config(None))
         self.assertFalse(hasattr(inference.load_config().data, "max_length"))
 
     def test_valid_partial_override_recursively_preserves_other_values(self):
-        before = original.load_config(None)
+        before = reference_config(None)
         actual = self.load_text(json.dumps({
             "data": {"batch_size": 2, "max_length": 30},
             "model": {"heads": {"losshead": {"l1_weight": 0.03}}},
@@ -71,13 +72,13 @@ class ConfigContractTests(unittest.TestCase):
         expected.data.max_length = 30
         expected.model.heads.losshead.l1_weight = 0.03
         self.assertEqual(actual, expected)
-        self.assertEqual(original.load_config(None), before)
+        self.assertEqual(reference_config(None), before)
 
     def test_configuration_objects_do_not_share_mutable_defaults(self):
         first = inference.load_config()
         second = inference.load_config()
         first.data.batch_size = 7
-        self.assertEqual(second, original.load_config(None))
+        self.assertEqual(second, reference_config(None))
 
     def test_json_must_be_an_object(self):
         for text in ("[]", "null", "4", '"value"', "true"):
@@ -139,7 +140,7 @@ class RecordContractTests(unittest.TestCase):
             if canonical[field] is None:
                 canonical[field] = ""
         frame = pd.DataFrame([canonical], columns=FIELDS).copy(deep=True)
-        dataset = original.DataGenerator([], None, frame, self.config, integrated_data_path=None)
+        dataset = SequenceDataset([], None, frame, self.config, integrated_data_path=None)
         return dataset.collate_fn([dataset[0]])[0]
 
     def test_encoding_is_identical_to_original_for_every_tensor(self):
@@ -314,7 +315,7 @@ class ScoreContractTests(unittest.TestCase):
             "import sys\n"
             f"sys.path.insert(0, {str(ROOT / 'src')!r})\n"
             "import grip_models.inference\n"
-            "assert 'grip_models.sequence' not in sys.modules\n"
+            "assert 'grip_models.data' not in sys.modules\n"
             "assert not ({'torch', 'numpy', 'pandas'} & set(sys.modules))\n"
         )
         result = subprocess.run([sys.executable, "-I", "-B", "-c", code],

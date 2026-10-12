@@ -6,9 +6,8 @@ Run from a source checkout with the model dependencies installed::
     python tools/check_numerical_parity.py
     python tools/check_numerical_parity.py --report source-parity.json
 
-The reference files are reconstructed in a temporary directory by reversing
-the five import relocations recorded in src/grip_models/source_changes.json.
-Their bytes must match all six recorded original SHA-256 hashes before import.
+The reference files are reconstructed from the development source map.
+All computational ASTs and six original file hashes are checked before import.
 No private snapshot, external dataset, or trained weights are loaded. This is
 an engineering equivalence check, not a biological benchmark or a validation
 of trained-model accuracy. JSON is always printed to stdout; --report also
@@ -19,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import hashlib
 import importlib
 import importlib.metadata
 import io
@@ -30,15 +28,9 @@ import random
 import sys
 import tempfile
 
+from source_reference import MODULE_FILES, ORIGINAL_HASHES, reconstruct_sources
 
-SOURCE_FILES = {
-    "src/grip_models/sequence.py": "test_energy_nomean_newdata_fix_120.py",
-    "src/grip_models/common_modules.py": "common_modules.py",
-    "src/grip_models/basic.py": "basic.py",
-    "src/grip_models/EvoMSA_flash.py": "EvoMSA_flash.py",
-    "src/grip_models/EvoPair_flash.py": "EvoPair_flash.py",
-    "src/grip_models/evoformer_fast.py": "evoformer_fast.py",
-}
+
 FIELDS = ("epitope_sequence", "mhc", "l_v", "l_j", "h_v", "cdr3_b", "h_j")
 CASES = (
     {"epitope_sequence": "AAAAAAAA", "mhc": "ACDEFGHIK"},
@@ -57,62 +49,8 @@ def require(condition, message):
         raise ParityError(message)
 
 
-def sha256(data):
-    return hashlib.sha256(data).hexdigest()
 
 
-def reconstruct_sources(root, destination):
-    """Read only published files; source manifest paths are labels, not inputs."""
-    manifest_bytes = (root / "src/grip_models/source_changes.json").read_bytes()
-    manifest = json.loads(manifest_bytes)
-    require(manifest.get("schema_version") == 1, "Unsupported source manifest schema")
-    records = manifest["files"]
-    targets = [record["target"] for record in records]
-    require(len(targets) == len(SOURCE_FILES) and set(targets) == set(SOURCE_FILES),
-            "Source manifest must contain exactly the six expected files")
-    require(sum(len(record["import_relocations"]) for record in records) == 5,
-            "Source manifest must record exactly five import relocations")
-    verified = []
-    for record in records:
-        target = record["target"]
-        original_name = SOURCE_FILES[target]
-        require(Path(record["source"]).name == original_name,
-                f"Unexpected original source label for {target}")
-        packaged = (root / target).read_bytes()
-        require(sha256(packaged) == record["packaged_source_sha256"],
-                f"Packaged SHA-256 mismatch: {target}")
-        lines = packaged.splitlines(keepends=True)
-        changed_lines = set()
-        for relocation in record["import_relocations"]:
-            index = relocation["line"] - 1
-            require(0 <= index < len(lines) and index not in changed_lines,
-                    f"Invalid import relocation line: {target}")
-            changed_lines.add(index)
-            content = lines[index].rstrip(b"\r\n")
-            require(content == relocation["after"].encode("utf-8"),
-                    f"Import relocation does not match source: {target}")
-            newline = lines[index][len(content):]
-            lines[index] = relocation["before"].encode("utf-8") + newline
-        restored = b"".join(lines)
-        require(sha256(restored) == record["original_source_sha256"],
-                f"Restored original SHA-256 mismatch: {target}")
-        (destination / original_name).write_bytes(restored)
-        verified.append({
-            "packaged_file": target,
-            "restored_filename": original_name,
-            "packaged_sha256": sha256(packaged),
-            "restored_original_sha256": sha256(restored),
-            "original_sha256_matches_manifest": True,
-            "import_relocations_reversed": len(changed_lines),
-        })
-    return {
-        "manifest": "src/grip_models/source_changes.json",
-        "manifest_sha256": sha256(manifest_bytes),
-        "private_snapshot_required": False,
-        "files_verified": len(verified),
-        "import_relocations_reversed": 5,
-        "files": verified,
-    }
 
 
 def as_dict(value):
@@ -170,12 +108,14 @@ def compare_models(root, restored, report):
     try:
         sys.path[:0] = [str(restored), str(root / "src")]
         original = importlib.import_module("test_energy_nomean_newdata_fix_120")
-        packaged = importlib.import_module("grip_models.sequence")
-        for target, name in SOURCE_FILES.items():
+        packaged = importlib.import_module("grip_models")
+        for name in ORIGINAL_HASHES:
             original_module = importlib.import_module(Path(name).stem)
-            package_module = importlib.import_module(f"grip_models.{Path(target).stem}")
             require(Path(original_module.__file__).resolve() == restored / name,
                     f"Unexpected restored module origin: {name}")
+        for target in MODULE_FILES:
+            module_name = ".".join(Path(target).with_suffix("").parts[1:])
+            package_module = importlib.import_module(module_name)
             require(Path(package_module.__file__).resolve() == (root / target).resolve(),
                     f"Unexpected packaged module origin: {target}")
         original_config = original.load_config(None)
@@ -186,7 +126,7 @@ def compare_models(root, restored, report):
         np.random.seed(SEED)
         torch.manual_seed(SEED)
         original_model = original.myModel(original_config).cpu().eval()
-        packaged_model = packaged.myModel(packaged_config).cpu().eval()
+        packaged_model = packaged.BaseEnergyModel(packaged_config).cpu().eval()
         packaged_model.load_state_dict(original_model.state_dict(), strict=True)
         report["state_tensors_identical"] = same(
             original_model.state_dict(), packaged_model.state_dict(), torch, "state_dict")
@@ -195,21 +135,31 @@ def compare_models(root, restored, report):
             full = {key: record.get(key, "") for key in FIELDS}
             old_data = original.DataGenerator(
                 [], None, pd.DataFrame([full]), original_config, integrated_data_path=None)
-            new_data = packaged.DataGenerator(
+            new_data = packaged.TrainingDataGenerator(
                 [], None, pd.DataFrame([full]), packaged_config, integrated_data_path=None)
             old_batch, _ = old_data.collate_fn([old_data[0]])
             new_batch, _ = new_data.collate_fn([new_data[0]])
             batch_count = same(old_batch, new_batch, torch, "batch")
             with torch.inference_mode():
                 old_output = original_model(old_batch, compute_loss=False, compute_energy=True)
-                new_output = packaged_model(new_batch, compute_loss=False, compute_energy=True)
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    new_output = packaged_model(new_batch, compute_loss=False, compute_energy=True)
             output_count = same(old_output, new_output, torch)
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                scores = packaged.score_record(packaged_model, full, packaged_config)
+            require(scores == {key: float(value.item()) for key, value in old_output["energies"].items()},
+                    "Public scoring values differ from the original output")
+            require(not stdout.getvalue() and not stderr.getvalue(),
+                    "Default inference emitted diagnostic output")
             report["cases"].append({
                 "index": index,
                 "synthetic_input": full,
                 "batch_tensors_identical": batch_count,
                 "output_tensors_identical": output_count,
                 "maximum_absolute_difference": 0.0,
+                "public_scores_identical": True,
+                "default_inference_quiet": True,
             })
     finally:
         sys.path[:] = old_path

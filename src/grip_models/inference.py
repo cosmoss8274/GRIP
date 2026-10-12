@@ -7,7 +7,7 @@ constraint, including components not filtered by the original data generator.
 
 The caller supplies an already loaded model in evaluation mode. This module
 does not select weights, add heads, set evaluation mode, or configure ensembles.
-Original model diagnostics remain visible; stdout is never redirected.
+Model diagnostics use standard Python logging at DEBUG level.
 """
 
 from __future__ import annotations
@@ -20,6 +20,8 @@ import math
 from pathlib import Path
 from types import SimpleNamespace
 
+from .configuration import load_config as _reference_config
+
 
 _FIELDS = ("epitope_sequence", "mhc", "l_v", "l_j", "h_v", "cdr3_b", "h_j")
 _AMINO_ACIDS = frozenset("ARNDCQEGHILKMFPSTWYV")
@@ -29,12 +31,12 @@ _FIXED_VALUES = {
     ("model", "embeddings", "seq_info_dim"): 21,
     ("data", "n_channels_seq"): 21,
 }
-# The original DataGenerator uses getattr(config.data, 'max_length', 500).
+# SequenceDataset uses getattr(config.data, 'max_length', 500).
 _REFERENCE_MAX_LENGTH = 500
 
 
-def _reference():
-    return import_module(".sequence", __package__)
+def _data_module():
+    return import_module(".data", __package__)
 
 
 def _plain(value):
@@ -116,7 +118,7 @@ def _fixed_architecture(config):
 def _validated_config(config):
     if not isinstance(config, SimpleNamespace):
         raise TypeError("config must be a configuration object returned by load_config")
-    defaults = _plain(_reference().load_config(None))
+    defaults = _plain(_reference_config(None))
     supplied = _plain(config)
     _finite(supplied)
     merged = _merge_known(defaults, supplied, complete=True)
@@ -140,14 +142,14 @@ def load_config(config_path=None):
         if not isinstance(supplied, dict):
             raise ValueError("Configuration JSON must be an object")
         _finite(supplied)
-    defaults = _plain(_reference().load_config(None))
+    defaults = _plain(_reference_config(None))
     merged = defaults if supplied is None else _merge_known(defaults, supplied)
     _fixed_architecture(merged)
     return _namespace(merged)
 
 
 def prepare_record(record, config):
-    """Return one CPU batch using the original DataGenerator and collate_fn.
+    """Return one CPU batch using SequenceDataset and its collate_fn.
 
     Required: a nonempty epitope_sequence and at least one nonempty MHC/TCR
     component. Optional components omitted or set to None become empty strings.
@@ -185,7 +187,7 @@ def prepare_record(record, config):
     import torch
 
     frame = pd.DataFrame([deepcopy(canonical)], columns=_FIELDS).copy(deep=True)
-    dataset = _reference().DataGenerator(
+    dataset = _data_module().SequenceDataset(
         [], None, frame, checked_config, integrated_data_path=None,
     )
     if len(dataset) != 1:
@@ -215,7 +217,7 @@ def score_record(model, record, config):
 
     No weights are loaded, no heads are created, and no model mode is changed.
     All model parameters/buffers must share one non-meta device. Original model
-    debug prints remain visible. This returns base-model energies, not calibrated
+    diagnostics use logging. This returns base-model energies, not calibrated
     binding probabilities or an ensemble score.
     """
     import torch

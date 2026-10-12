@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grip-models"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "GRIP core model for peptide–MHC–TCR interactions"
 readme = "README.md"
 license = "MIT"
@@ -31,8 +31,5 @@ include-package-data = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["grip_models"]
+include = ["grip_models", "grip_models.*"]
 namespaces = false
-
-[tool.setuptools.package-data]
-grip_models = ["source_changes.json"]
