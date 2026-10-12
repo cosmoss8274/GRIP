@@ -4,7 +4,7 @@
 
 GRIP is an energy-guided framework for designing immunopeptides for specified MHC and T-cell receptor contexts. It learns single-residue preferences and pairwise residue couplings to connect binding prediction with peptide sequence design. The study combines computational benchmarks with experimental validation of MHC-I and MHC-II binding. In the KRAS G12D system, designed peptides elicited T-cell-mediated cytotoxicity comparable to or greater than that of the native peptide in the tested TCR clonotypes.
 
-This repository provides the sequence energy model, GRIP-CLA classifier and an interface to the structure-conditioned inverse model. The energy model and classifier share the same sequence encoder and neural backbone.
+This repository provides the sequence energy model, GRIP-CLA classifier and inverse model for structure-conditioned peptide design.
 
 [![GRIP framework, Figure 1](docs/assets/figure-1.png)](docs/assets/figure-1.pdf)
 
@@ -34,12 +34,12 @@ energies = score_record(model, record, config)
 print(energies)  # single, pair, total
 ```
 
-The first call downloads the model and its configuration; later calls use the local cache. Supply a peptide and its MHC pseudosequence in [the input format](docs/usage.md#prepare-a-record). This released checkpoint is the MHC-I energy model, and the returned values are model energies.
+Supply a peptide and its MHC pseudosequence in [the input format](docs/usage.md#prepare-a-record). The model returns single-site, pairwise and total energies. Weights are downloaded on first use and cached locally.
 
-For task-specific classification, use `load_classifier` and `classify_record` with the corresponding fine-tuned checkpoint. The inverse model uses `load_inverse_model` and `inverse_logits` with a separately installed CarbonDesign backbone and prepared structure features. See [model interfaces](docs/models.md) for the inputs and outputs of each component.
+See [Models](docs/models.md) for classification and inverse-model usage. The [weight download](https://github.com/cosmoss8274/GRIP/releases/tag/v0.1.0) contains the MHC-I energy checkpoint; classification and inverse inference use local task-specific checkpoints.
 
 To try input encoding without weights, run `python examples/core.py encode`. For command-line scoring, local checkpoints and offline use, see [Usage](docs/usage.md).
 
 ## License
 
-[MIT](LICENSE). The external CarbonDesign and ESM dependencies retain their own terms; their implementations and pretrained resources are distributed upstream.
+[MIT](LICENSE). External dependencies retain their respective terms; see [Dependencies](docs/dependencies.md).

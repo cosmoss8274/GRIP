@@ -1,7 +1,4 @@
-"""GRIP models, sequence encoding, and pretrained weights.
-
-Importing this package does not import model dependencies or load checkpoints.
-"""
+"""GRIP energy, classification and inverse models."""
 
 from importlib import import_module
 

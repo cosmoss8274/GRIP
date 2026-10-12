@@ -37,12 +37,9 @@ restype_order_with_x = {restype: i for i, restype in enumerate(restypes_with_x)}
 def create_hla_mapping(
     hla_fasta_path="data/hla_prot.fasta", mapping_cache_path="data/hla_mapping.csv"
 ):
-    """
-    Create mapping between HLA alleles and their sequences from official IPD-IMGT/HLA database
-    Args:
-        hla_fasta_path: path to hla_prot.fasta from IPD-IMGT/HLA database
-        mapping_cache_path: path to save/load the mapping
-    """
+    """Map HLA allele names to sequences from an IPD-IMGT/HLA FASTA file.
+
+    ``mapping_cache_path`` stores the mapping for subsequent calls."""
     if os.path.exists(mapping_cache_path):
         hla_mapping = pd.read_csv(mapping_cache_path, index_col=0).to_dict()["sequence"]
         return hla_mapping
@@ -102,7 +99,7 @@ class SequenceDataset(Dataset):
         self.dataFrameIn = dataFrameIn
 
     def _filter_by_length(self, df, max_length):
-        """Filter sequences by maximum length"""
+        """Filter sequences by maximum length."""
         initial_count = len(df)
         mhc_mask = df["mhc"].apply(
             lambda x: len(x) <= max_length if pd.notna(x) else True
@@ -118,16 +115,12 @@ class SequenceDataset(Dataset):
         return filtered_df
 
     def _preprocess_data(self, df):
-        """
-        Preprocess the data:
-        1. Remove rows with empty epitopes
-        2. Clean epitope sequences by removing modifications
-        """
+        """Remove empty epitopes and strip sequence modification annotations."""
         df = df[df["epitope_sequence"].notna()]
         df = df[df["epitope_sequence"].str.len() > 0]
 
         def clean_epitope(seq):
-            """Remove modifications from epitope sequence"""
+            """Strip modification annotations from an epitope sequence."""
             if pd.isna(seq):
                 return seq
             base_seq = seq.split("+")[0].strip()
@@ -144,17 +137,9 @@ class SequenceDataset(Dataset):
         return len(self.data)
 
     def encode_sequence(self, seq, as_target=False):
-        """
-        Encode an amino acid sequence into one-hot format or target indices.
+        """Encode a sequence as a one-hot tensor [L, A].
 
-        Args:
-            seq: Amino acid sequence string
-            as_target: If True, return indices instead of one-hot encoding
-
-        Returns:
-            torch.Tensor: One-hot encoded sequence [seq_len, n_channels_seq] or
-                         target indices [seq_len] if as_target=True
-        """
+        Set ``as_target=True`` to return residue indices [L]."""
         if pd.isna(seq) or len(seq) == 0:
             return (
                 torch.zeros((0, self.n_channels_seq), dtype=torch.float32)
@@ -258,7 +243,7 @@ class SequenceDataset(Dataset):
         return (item, target)
 
     def collate_fn(self, batch):
-        """Collate function handling all TCR features"""
+        """Collate peptide, MHC and TCR sequence features."""
         batch_size = len(batch)
         max_mhc_len = max((x[0]["mhc_len"] for x in batch))
         max_epitope_len = max((x[0]["epitope_len"] for x in batch))

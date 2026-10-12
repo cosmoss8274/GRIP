@@ -48,7 +48,7 @@ class BaseEnergyModel(nn.Module):
         self.linear_relpos = nn.Linear(2 * self.relpos_k + 1, self.pair_channel)
 
     def add(self, x, y, inplace=False):
-        """Helper method for adding tensors with optional inplace operation"""
+        """Add tensors, optionally in place."""
         return x.add_(y) if inplace else x + y
 
     def get_sinusoidal_pos_encoding(self, positions):
@@ -68,15 +68,7 @@ class BaseEnergyModel(nn.Module):
         return self.linear_abs_pos(pos_enc)
 
     def relpos(self, ri: torch.Tensor, start_idx: int, end_idx: int):
-        """
-        Computes relative positional encodings for a sequence segment
-        Args:
-            ri: position indices tensor [batch, total_len]
-            start_idx: start index of the sequence segment
-            end_idx: end index of the sequence segment
-        Returns:
-            Relative position encodings for the segment [batch, segment_len, segment_len, pair_channel]
-        """
+        """Embed relative positions within the segment ``ri[..., start_idx:end_idx]``."""
         segment_ri = ri[..., start_idx:end_idx]
         batch_size, segment_len = segment_ri.shape
         pos_i = segment_ri.unsqueeze(-1)
@@ -95,7 +87,7 @@ class BaseEnergyModel(nn.Module):
         return pos_emb
 
     def _create_pair_type_embeddings(self, type_tensor):
-        """Creates pairwise type embeddings."""
+        """Embed ordered pairs of sequence-component types."""
         type_tensor = type_tensor.long()
         batch_size, seq_len = type_tensor.shape
         type_i = type_tensor.unsqueeze(2)
@@ -104,7 +96,7 @@ class BaseEnergyModel(nn.Module):
         return self.pair_type_embedding(pair_type_idx)
 
     def _run_evoformer(self, single, pair):
-        """Wrapper for Evoformer forward pass to handle checkpointing"""
+        """Run the Evoformer with optional activation checkpointing."""
 
         def evoformer_function(s, p):
             return self.evmodel(s, p)
@@ -121,13 +113,10 @@ class BaseEnergyModel(nn.Module):
             return self.evmodel(single, pair)
 
     def calculate_energies(self, headers, representations, batch):
-        """Sum single-site and pairwise negative log probabilities.
+        """Compute single-site and joint residue-pair energies.
 
         E_single = -sum_i log p_i(x_i).
-        E_pair = -1/2 sum_ij log p_ij(x_i, x_j), including diagonal terms.
-        Each pair distribution uses a joint softmax over A*A residue pairs.
-        Neither term is normalized by peptide length.
-        """
+        E_pair = -1/2 sum_ij log p_ij(x_i, x_j), including diagonal terms."""
         seq_logits = headers["seqhead"]["logits"]
         pair_logits = headers["pairhead"]["logits"]
         labels = batch["aatype"]
