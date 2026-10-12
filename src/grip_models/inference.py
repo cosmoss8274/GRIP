@@ -1,4 +1,4 @@
-"""Strict, single-record adapters for the unchanged reference base energy model.
+"""Sequence encoding and single-record energy scoring.
 
 Records use the original sequence field names. Sequences must already be
 canonical uppercase amino-acid strings; this module never cleans or rewrites
@@ -7,7 +7,6 @@ constraint, including components not filtered by the original data generator.
 
 The caller supplies an already loaded model in evaluation mode. This module
 does not select weights, add heads, set evaluation mode, or configure ensembles.
-Model diagnostics use standard Python logging at DEBUG level.
 """
 
 from __future__ import annotations
@@ -21,7 +20,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .configuration import load_config as _reference_config
-
 
 _FIELDS = ("epitope_sequence", "mhc", "l_v", "l_j", "h_v", "cdr3_b", "h_j")
 _AMINO_ACIDS = frozenset("ARNDCQEGHILKMFPSTWYV")
@@ -84,9 +82,13 @@ def _merge_known(default, supplied, path=(), *, complete=False):
         allowed.add("max_length")
     unknown = set(supplied) - allowed
     if unknown:
-        raise ValueError(f"Unknown configuration key at {label}: {sorted(map(str, unknown))}")
+        raise ValueError(
+            f"Unknown configuration key at {label}: {sorted(map(str, unknown))}"
+        )
     if complete and set(default) - set(supplied):
-        raise ValueError(f"Missing configuration keys at {label}: {sorted(set(default) - set(supplied))}")
+        raise ValueError(
+            f"Missing configuration keys at {label}: {sorted(set(default) - set(supplied))}"
+        )
     result = deepcopy(default)
     for key, value in supplied.items():
         field_path = path + (key,)
@@ -112,7 +114,9 @@ def _fixed_architecture(config):
         for name in path:
             value = value[name]
         if value != expected:
-            raise ValueError(f"{'.'.join(path)} is fixed at {expected} for the reference base model")
+            raise ValueError(
+                f"{'.'.join(path)} is fixed at {expected} for the reference base model"
+            )
 
 
 def _validated_config(config):
@@ -137,7 +141,9 @@ def load_config(config_path=None):
     if config_path is not None:
         with Path(config_path).open("r", encoding="utf-8") as stream:
             supplied = json.load(
-                stream, object_pairs_hook=_unique_object, parse_constant=_reject_constant,
+                stream,
+                object_pairs_hook=_unique_object,
+                parse_constant=_reject_constant,
             )
         if not isinstance(supplied, dict):
             raise ValueError("Configuration JSON must be an object")
@@ -169,7 +175,9 @@ def prepare_record(record, config):
         if not isinstance(value, str):
             raise ValueError(f"{field} must be a sequence string")
         if any(character not in _AMINO_ACIDS for character in value):
-            raise ValueError(f"{field} must contain only standard uppercase amino acids")
+            raise ValueError(
+                f"{field} must contain only standard uppercase amino acids"
+            )
         canonical[field] = value
     if not canonical["epitope_sequence"]:
         raise ValueError("epitope_sequence must be nonempty")
@@ -188,13 +196,19 @@ def prepare_record(record, config):
 
     frame = pd.DataFrame([deepcopy(canonical)], columns=_FIELDS).copy(deep=True)
     dataset = _data_module().SequenceDataset(
-        [], None, frame, checked_config, integrated_data_path=None,
+        [],
+        None,
+        frame,
+        checked_config,
+        integrated_data_path=None,
     )
     if len(dataset) != 1:
         raise RuntimeError("Reference preprocessing did not retain exactly one record")
     for field, value in canonical.items():
         if dataset.data.iloc[0][field] != value:
-            raise RuntimeError(f"Reference preprocessing changed accepted field {field}")
+            raise RuntimeError(
+                f"Reference preprocessing changed accepted field {field}"
+            )
     batch, target = dataset.collate_fn([dataset[0]])
     if not isinstance(batch, dict) or "aatype" not in batch:
         raise RuntimeError("Reference collation did not return aatype")
@@ -217,7 +231,7 @@ def score_record(model, record, config):
 
     No weights are loaded, no heads are created, and no model mode is changed.
     All model parameters/buffers must share one non-meta device. Original model
-    diagnostics use logging. This returns base-model energies, not calibrated
+    This returns base-model energies, not calibrated
     binding probabilities or an ensemble score.
     """
     import torch
@@ -225,7 +239,9 @@ def score_record(model, record, config):
     if not isinstance(model, torch.nn.Module):
         raise TypeError("model must be a torch.nn.Module")
     if any(module.training for module in model.modules()):
-        raise ValueError("model and all submodules must already be in evaluation mode; call model.eval() explicitly")
+        raise ValueError(
+            "model and all submodules must already be in evaluation mode; call model.eval() explicitly"
+        )
     heads = getattr(model, "heads", None)
     if not isinstance(heads, (Mapping, torch.nn.ModuleDict)):
         raise ValueError("model.heads must be a mapping of existing head modules")
@@ -235,7 +251,9 @@ def score_record(model, record, config):
             raise ValueError(f"model must contain an existing {name} module")
         if name not in heads or heads[name] is not head:
             raise ValueError(f"model.heads must reference the existing {name} module")
-    devices = {tensor.device for tensor in list(model.parameters()) + list(model.buffers())}
+    devices = {
+        tensor.device for tensor in list(model.parameters()) + list(model.buffers())
+    }
     if len(devices) != 1:
         raise ValueError("model parameters and buffers must identify one shared device")
     device = next(iter(devices))
@@ -248,7 +266,9 @@ def score_record(model, record, config):
     batch = {key: value.to(device) for key, value in batch.items()}
     with torch.inference_mode():
         outputs = model(batch, compute_loss=False, compute_energy=True)
-    if not isinstance(outputs, Mapping) or not isinstance(outputs.get("energies"), Mapping):
+    if not isinstance(outputs, Mapping) or not isinstance(
+        outputs.get("energies"), Mapping
+    ):
         raise ValueError("model must return an energies mapping")
     result = {}
     for name in ("single", "pair", "total"):

@@ -79,7 +79,7 @@ python examples/core.py score --record record.json --checkpoint model.pt --confi
 
 Omit `--config` to use the core defaults. If weights are stored under a top-level key, add that exact key, for example `--state-dict-key model_state_dict`. Use `--device cuda:0` for a GPU. Run `python examples/core.py score --help` for all options.
 
-For lower-level loading, `load_weights(model, path, sha256=..., state_dict_key=None)` accepts a local state dictionary and its SHA-256 digest. The command-line example computes the digest of the supplied local file. Model diagnostics use Python logging at the `DEBUG` level.
+For lower-level loading, `load_weights(model, path, sha256=..., state_dict_key=None)` accepts a local state dictionary and its SHA-256 digest. The command-line example computes the digest of the supplied local file.
 
 | Public name | Purpose |
 | --- | --- |

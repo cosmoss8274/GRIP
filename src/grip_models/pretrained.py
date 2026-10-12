@@ -9,7 +9,6 @@ from pathlib import Path
 import tempfile
 from urllib.request import Request, urlopen
 
-
 _RELEASE = "v0.1.0"
 _RELEASE_URL = f"https://github.com/cosmoss8274/GRIP/releases/download/{_RELEASE}"
 _MODELS = {
@@ -38,24 +37,31 @@ def _asset(cache, filename, expected, *, local_files_only=False):
     path = cache / filename
     if path.exists():
         if not path.is_file() or not hmac.compare_digest(_digest(path), expected):
-            raise ValueError(f"Invalid cached pretrained file: {path}. Remove it and retry.")
+            raise ValueError(
+                f"Invalid cached pretrained file: {path}. Remove it and retry."
+            )
         return path
     if local_files_only:
         raise FileNotFoundError(f"Pretrained file is not cached: {path}")
 
     temporary = None
     try:
-        request = Request(f"{_RELEASE_URL}/{filename}", headers={"User-Agent": "GRIP/0.1.0"})
+        request = Request(
+            f"{_RELEASE_URL}/{filename}", headers={"User-Agent": "GRIP/0.1.0"}
+        )
         with urlopen(request, timeout=60) as response:
-            with tempfile.NamedTemporaryFile(dir=cache, prefix=f".{filename}.",
-                                             suffix=".tmp", delete=False) as stream:
+            with tempfile.NamedTemporaryFile(
+                dir=cache, prefix=f".{filename}.", suffix=".tmp", delete=False
+            ) as stream:
                 temporary = Path(stream.name)
                 digest = hashlib.sha256()
                 for block in iter(lambda: response.read(1024 * 1024), b""):
                     stream.write(block)
                     digest.update(block)
         if not hmac.compare_digest(digest.hexdigest(), expected):
-            raise ValueError(f"Downloaded pretrained file failed verification: {filename}")
+            raise ValueError(
+                f"Downloaded pretrained file failed verification: {filename}"
+            )
         os.replace(temporary, path)
     finally:
         if temporary is not None:
@@ -63,8 +69,9 @@ def _asset(cache, filename, expected, *, local_files_only=False):
     return path
 
 
-def load_pretrained(name="mhc-i-energy", *, cache_dir=None, device="cpu",
-                    local_files_only=False):
+def load_pretrained(
+    name="mhc-i-energy", *, cache_dir=None, device="cpu", local_files_only=False
+):
     """Return a pretrained base energy model in evaluation mode and its config.
 
     ``mhc-i-energy`` selects the MHC-I base energy checkpoint. Missing files

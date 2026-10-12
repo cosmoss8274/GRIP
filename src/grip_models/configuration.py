@@ -17,36 +17,21 @@ def load_config(config_path):
                 "seq_channel": 128,
                 "pair_channel": 64,
                 "max_relative_feature": 32,
-                "go_embed_dim": 64
+                "go_embed_dim": 64,
             },
             "heads": {
-                "seqhead": {
-                    "enabled": True,
-                },
-                "pairhead": {
-                    "enabled": True,
-                },
-                "losshead": {
-                    "enabled": True,
-                    "l1_weight": 0.01,
-                    "l2_weight": 0.01
-                }
-            }
+                "seqhead": {"enabled": True},
+                "pairhead": {"enabled": True},
+                "losshead": {"enabled": True, "l1_weight": 0.01, "l2_weight": 0.01},
+            },
         },
         "loss": {
-            "seq": {
-                "config": {},
-                "loss_fn": "seq_loss",
-                "weight": 1.0
-            },
+            "seq": {"config": {}, "loss_fn": "seq_loss", "weight": 1.0},
             "mrf_pair": {
-                "config": {
-                    "pair_norm_weight": 0.01,
-                    "site_norm_weight": 0.01
-                },
+                "config": {"pair_norm_weight": 0.01, "site_norm_weight": 0.01},
                 "loss_fn": "mrf_pair_loss",
-                "weight": 1.0
-            }
+                "weight": 1.0,
+            },
         },
         "data": {
             "batch_size": 1,
@@ -56,10 +41,9 @@ def load_config(config_path):
             "n_channels_esm": 33,
             "go_embedding_dim": 64,
             "m": 1024,
-            "z": 128
-        }
+            "z": 128,
+        },
     }
-
     if config_path:
         with open(config_path) as f:
             user_config = json.load(f)
@@ -67,15 +51,14 @@ def load_config(config_path):
 
     def dict_to_namespace(d):
         if not isinstance(d, dict):
-            return d  # Return non-dict objects as-is
+            return d
         namespace = SimpleNamespace()
         for key, value in d.items():
             if isinstance(value, dict):
-                setattr(namespace, key, dict_to_namespace(value))  # Recursive call for nested dict
+                setattr(namespace, key, dict_to_namespace(value))
             else:
                 setattr(namespace, key, value)
         return namespace
-
 
     config = dict_to_namespace(default_config)
     return config
