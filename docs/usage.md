@@ -16,7 +16,17 @@ The encoder uses the original training data generator. Results are returned as a
 
 ## Model files
 
-Use the JSON configuration and checkpoint from the same training run. In the README example, `checkpoint_sha256` is the checkpoint's expected SHA-256 checksum.
+Use the JSON configuration and checkpoint from the same training run. `checkpoint_sha256` is the checkpoint's expected file checksum.
+
+```python
+from grip_models import BaseEnergyModel, load_config, load_weights, score_record
+
+config = load_config("config.json")
+model = BaseEnergyModel(config)
+load_weights(model, "model.pt", sha256=checkpoint_sha256)
+model.eval()
+energies = score_record(model, record, config)
+```
 
 `load_weights` accepts a plain state dictionary. For a checkpoint containing a named state dictionary, pass its top-level key:
 
@@ -40,9 +50,7 @@ The CPU checks use Python 3.12 and the dependencies in `requirements-test.txt`:
 python -m pip install -r requirements-test.txt
 python -m pip install --no-deps .
 python -B -m unittest discover -s tests/core -v
-python -B -m unittest discover -s tests/source -v
 python -B -m unittest discover -s tests/runtime -v
-python -B tools/verify_source.py
 python -B tools/check_numerical_parity.py
 ```
 

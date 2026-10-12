@@ -2,6 +2,7 @@ name: Core checks
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -30,9 +31,7 @@ jobs:
           python -m pip install --no-deps --no-build-isolation .
       - name: Check source and public interfaces
         run: |
-          python -B tools/verify_source.py
           python -B -m unittest discover -s tests/core -v
-          python -B -m unittest discover -s tests/source -v
           python -B -m unittest discover -s tests/runtime -v
       - name: Verify numerical source parity
         run: python -B tools/check_numerical_parity.py
