@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "prepared_date": "2026-10-12",
-  "scope": "GRIP core development package, documentation, branding and verification tools.",
+  "scope": "GRIP core package and documentation.",
   "files": [
     {
       "path": ".github/workflows/checks.yml",
@@ -17,31 +17,31 @@
     },
     {
       "path": "README.md",
-      "sha256": "b47f2022970f6378387a8eca8859b985b8bb784790f2f5201641bd13b812e3b0"
+      "sha256": "a0d31f3da681f44020feb1f2c28525005cf9c7a798f83059a9d8a224fb034b8c"
+    },
+    {
+      "path": "docs/assets/figure-1.pdf",
+      "sha256": "437de6bbebfa720a9fb6bad0b836feceda833cdbe7ec5d131431059dd53715be"
+    },
+    {
+      "path": "docs/assets/figure-1a.png",
+      "sha256": "cf9591a7a24034d2dc707208bbab3f918708931e002826be78a2cdd92946350a"
     },
     {
       "path": "docs/assets/grip-logo.png",
       "sha256": "ca8a7f955be021dcf5b5093c5036de93c41f2ecbad86a943826df7ed45910a40"
     },
     {
-      "path": "docs/assets/grip-overview.svg",
-      "sha256": "d9f97dc9d116d45bfbf278755c68c394107970866d3eb2115836bd67e8966758"
-    },
-    {
       "path": "docs/assets/grip-social-preview.png",
-      "sha256": "4b2718771751bb46e19db83fa6dfa327fd119cf504e3ef26d8bf8b4f315d0055"
+      "sha256": "6c5948110d5d40a72658d3d5b1fa31944a79b34818c9699e9dda67b315fcad8f"
     },
     {
-      "path": "docs/reproducibility.md",
-      "sha256": "5bce1dc18e14ea2a21145d36914b6dc71ae941ce151057985d6e06cc1e4eca10"
-    },
-    {
-      "path": "docs/validation/source-parity.json",
-      "sha256": "f164778f6d8a3b221c3d1961a6026aa7411a8f59d5073eaae0156c134a8c9cec"
+      "path": "docs/usage.md",
+      "sha256": "c590a76e5c27c464a978c9b38ba00c91b4cb7da1402fe92b59f85bb869978f36"
     },
     {
       "path": "pyproject.toml",
-      "sha256": "ba12f8681a284740844739137998ce7f95f5e9cb7f1cbb0a72b3e6f0052dab41"
+      "sha256": "dd8a63fa2b9a3fee1ee16d4d7656680085295a1c1ee9db283352443bc1f2dcf7"
     },
     {
       "path": "requirements-test.txt",
