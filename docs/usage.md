@@ -9,7 +9,7 @@ Save a peptide in `epitope_sequence` and its 34-residue MHC pseudosequence in `m
 ```json
 {
   "epitope_sequence": "AAAAAAAA",
-  "mhc": "ACDEFGHIK"
+  "mhc": "ACDEFGHIKLMNPQRSTVWYACDEFGHIKLMNPQ"
 }
 ```
 
@@ -58,7 +58,7 @@ python examples/core.py encode
 python examples/core.py encode --record record.json
 ```
 
-Without `--record`, the command encodes the synthetic example and reports component lengths and tensor count.
+Without `--record`, the command uses a built-in synthetic record and reports component lengths and tensor count.
 
 Encoding is also available in Python:
 
