@@ -1,4 +1,4 @@
-"""GRIP core model, sequence encoding, and pretrained weights.
+"""GRIP models, sequence encoding, and pretrained weights.
 
 Importing this package does not import model dependencies or load checkpoints.
 """
@@ -7,22 +7,34 @@ from importlib import import_module
 
 __all__ = [
     "BaseEnergyModel",
+    "ClassifierModel",
+    "SequenceDataset",
     "TrainingDataGenerator",
     "load_config",
     "prepare_record",
     "score_record",
     "load_weights",
     "load_pretrained",
+    "load_classifier",
+    "classify_record",
+    "load_inverse_model",
+    "inverse_logits",
 ]
 
 _EXPORTS = {
     "BaseEnergyModel": (".model.energy", "BaseEnergyModel"),
+    "ClassifierModel": (".model.classifier", "ClassifierModel"),
+    "SequenceDataset": (".data", "SequenceDataset"),
     "TrainingDataGenerator": (".data", "SequenceDataset"),
     "load_config": (".inference", "load_config"),
     "prepare_record": (".inference", "prepare_record"),
     "score_record": (".inference", "score_record"),
     "load_weights": (".checkpoints", "load_weights"),
     "load_pretrained": (".pretrained", "load_pretrained"),
+    "load_classifier": (".classification", "load_classifier"),
+    "classify_record": (".classification", "classify_record"),
+    "load_inverse_model": (".inverse", "load_inverse_model"),
+    "inverse_logits": (".inverse", "inverse_logits"),
 }
 
 

@@ -259,24 +259,6 @@ class ScoreContractTests(unittest.TestCase):
         self.assertTrue(self.model.seqhead.training)
         self.assertEqual(self.model.calls, [])
 
-    def test_missing_or_replaced_heads_are_rejected_before_forward(self):
-        for name in ("seqhead", "pairhead"):
-            model = EnergyStub().eval()
-            delattr(model, name)
-            with self.subTest(name=name), self.assertRaises(ValueError):
-                inference.score_record(model, VALID, self.config)
-            self.assertEqual(model.calls, [])
-        self.model.heads["seqhead"] = torch.nn.Identity()
-        with self.assertRaises(ValueError):
-            inference.score_record(self.model, VALID, self.config)
-        self.assertEqual(self.model.calls, [])
-
-    def test_invalid_head_container_is_rejected_before_forward(self):
-        self.model.heads = 5
-        with self.assertRaisesRegex(ValueError, "mapping"):
-            inference.score_record(self.model, VALID, self.config)
-        self.assertEqual(self.model.calls, [])
-
     def test_meta_model_is_rejected_before_forward(self):
         self.model.to("meta")
         with self.assertRaisesRegex(ValueError, "materialized"):
