@@ -1,6 +1,4 @@
-<img src="docs/assets/grip-logo.png" alt="GRIP" width="150" align="right">
-
-# GRIP
+<img src="docs/assets/grip-logo.png" alt="GRIP" width="180">
 
 **Energy-guided de novo design of functional immunogenic neoantigens**
 
