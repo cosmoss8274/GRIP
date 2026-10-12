@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-import basic
+from . import basic
 import math
 
 # m : N L 32  
@@ -76,11 +76,6 @@ class TriAttStart(nn.Module):
         b = self.blinear(z)
         att = torch.einsum('oblhc,obkhc->oblkh',q,k)*self.sq_c + b[:,None,:,:,:]#o is added batch dim
         print("The attention shape for pair is:", att.shape)
-        #mask
-        if mask is not None:
-            mask_condition = (z.sum(dim=-1) == 0).unsqueeze(-1).unsqueeze(-1) #b, l, l, h
-            att = att.masked_fill(mask_condition == 0, float('-1e9'))
-
        
         att = F.softmax(att,dim=3)
 
@@ -113,11 +108,6 @@ class TriAttEnd(nn.Module):
         b = self.blinear(z)
         att = torch.einsum('oblhc,okbhc->oblkh',q,k)*self.sq_c + b[:,None,:,:,:].permute(0,1,3,2,4)
         print(att.shape)
-
-         #mask
-        if mask is not None:
-            mask_condition = (z.sum(dim=-1) == 0).unsqueeze(-1) #b, l, l, 1
-            att = att.masked_fill(mask_condition == 0, float('-1e9'))
 
 
         att = F.softmax(att,dim=3)
@@ -152,4 +142,9 @@ class PairTrans(nn.Module):
         a = self.linear1(self.norm(z))
         a = self.linear2(F.relu(a))
         return a 
+
+
+
+
+
 

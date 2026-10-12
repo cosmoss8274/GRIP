@@ -1,0 +1,39 @@
+name: Core checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      CUDA_VISIBLE_DEVICES: ""
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install tested dependencies and package
+        run: |
+          python -m pip install -r requirements-test.txt
+          python -m pip install 'setuptools>=77' wheel
+          python -m pip install --no-deps --no-build-isolation .
+      - name: Check source and public interfaces
+        run: |
+          python -B -m unittest discover -s tests/core -v
+          python -B -m unittest discover -s tests/runtime -v
+      - name: Verify numerical source parity
+        run: python -B tools/check_numerical_parity.py
+      - name: Build wheel
+        run: python -m pip wheel --no-deps --no-build-isolation --wheel-dir dist .

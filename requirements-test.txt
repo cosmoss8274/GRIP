@@ -1,0 +1,9 @@
+# Direct dependencies used in the CPU verification environment (Python 3.12).
+# This is a tested development environment, not a historical training lockfile.
+torch==2.6.0
+numpy==1.26.3
+pandas==2.2.3
+scipy==1.13.1
+scikit-learn==1.6.1
+einops==0.8.1
+biopython==1.85
