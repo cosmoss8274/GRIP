@@ -84,7 +84,7 @@ class TriAttStart(nn.Module):
         b = self.blinear(z)
         att = torch.einsum('oblhc,obkhc->oblkh',q,k)*self.sq_c + b[:,None,:,:,:]#o is added batch dim
         logger.debug('%s %s', "The attention shape for pair is:", att.shape)
-       
+
         att = F.softmax(att,dim=3)
 
         o = torch.einsum('oblkh,obkhc->oblhc',att,v)
@@ -149,10 +149,4 @@ class PairTrans(nn.Module):
     def forward(self,z):
         a = self.linear1(self.norm(z))
         a = self.linear2(F.relu(a))
-        return a 
-
-
-
-
-
-
+        return a

@@ -37,9 +37,9 @@ class EvoBlock(nn.Module):
     #def layerfunc_pair_tristart(self,z):
     #    return self.pair_tristart(z) + z
     #def layerfunc_pair_triend(self,z):
-    #    return self.pair_triend(z) + z      
+    #    return self.pair_triend(z) + z
     def layerfunc_pair_trans(self,z):
-        return self.pair_trans(z) + z  
+        return self.pair_trans(z) + z
     def forward(self,m,z):
 
         m = m + self.msa_row(m, z)
@@ -95,12 +95,3 @@ class Evoformer(nn.Module):
         for i in range(self.num_layers):
             m, z = self.evos[i](m, z)
         return m, z
-
-
-
-
-
-
-
-
-

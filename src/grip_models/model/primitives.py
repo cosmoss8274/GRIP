@@ -17,7 +17,7 @@ class LinearNoBias(nn.Module):
     def forward(self,x):
         x = self.linear(x)
         return x
-    
+
 
 
 def transform(k,rotation,translation):
@@ -47,7 +47,7 @@ def IPA_transform(k,rotation,translation):
 def IPA_inverse_transform(k,rotation,translation):
     # k:            L d1, d2, 3
     # rotation:     L 3 x 3
-    # translation:  L 3   
+    # translation:  L 3
     return torch.einsum('bija,bad->bijd',k-translation[:,None,None,:],rotation.transpose(-1,-2))
 
 def update_transform(t,tr,rotation,translation):
@@ -67,12 +67,3 @@ def quat2rot(q,L):
     u[:,2,1]=2*(q[:,1]*q[:,2]+1*q[:,0])
     u[:,2,2]=1*1-q[:,0]*q[:,0]-q[:,1]*q[:,1]+q[:,2]*q[:,2]
     return u/scale
-
-
-
-
-
-
-
-
-    

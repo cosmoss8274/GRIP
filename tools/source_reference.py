@@ -53,6 +53,12 @@ class RestoreNames(ast.NodeTransformer):
         node.name = self.reverse.get(node.name, node.name)
         return self.generic_visit(node)
 
+    def visit_Expr(self, node):
+        # Whitespace in documentation strings is not computational source.
+        if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
+            node.value.value = "\n".join(line.rstrip() for line in node.value.value.split("\n"))
+        return self.generic_visit(node)
+
     def visit_Call(self, node):
         node = self.generic_visit(node)
         if (isinstance(node.func, ast.Attribute) and node.func.attr == "debug"
@@ -147,8 +153,10 @@ def validate_sources(root):
                     content = lines[index].rstrip("\r\n")
                     require(content == change["after"], f"Replacement mismatch: {target}")
                     lines[index] = change["before"] + lines[index][len(content):]
-                restored = "".join(lines)
-                require(normalized_ast(current, part["symbol_renames"]) == ast_text(ast.parse(restored)),
+                trailing = part.get("trailing_whitespace", "")
+                require(not trailing or trailing.isspace(), f"Non-whitespace source suffix: {target}")
+                restored = "".join(lines) + trailing
+                require(normalized_ast(current, part["symbol_renames"]) == normalized_ast(restored, {}),
                         f"Computation changed beyond allowed renames: {target}")
             require(len(restored.splitlines()) == part["source_end_line"]-part["source_start_line"]+1,
                     f"Source line count mismatch: {name}")

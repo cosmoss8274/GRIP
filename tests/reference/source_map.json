@@ -16,11 +16,12 @@
         {
           "target": "src/grip_models/configuration.py",
           "start_line": 7,
-          "end_line": 83,
+          "end_line": 81,
           "source_start_line": 47,
           "source_end_line": 123,
           "replacements": [],
-          "symbol_renames": {}
+          "symbol_renames": {},
+          "trailing_whitespace": "\n\n"
         },
         {
           "target": "src/grip_models/data.py",
@@ -34,10 +35,20 @@
         {
           "target": "src/grip_models/model/heads.py",
           "start_line": 19,
-          "end_line": 517,
+          "end_line": 516,
           "source_start_line": 133,
           "source_end_line": 631,
           "replacements": [
+            {
+              "line": 5,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 11,
+              "before": "        ",
+              "after": ""
+            },
             {
               "line": 14,
               "before": "            print(\"Error: 'seq' not in representations!\")",
@@ -52,6 +63,11 @@
               "line": 17,
               "before": "        print(f\"Linear bias (proj): {self.proj.bias}\")",
               "after": "        logger.debug(f\"Linear bias (proj): {self.proj.bias}\")"
+            },
+            {
+              "line": 19,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 21,
@@ -74,9 +90,14 @@
               "after": "        logger.debug(f\"SeqHead logits shape: {logits.shape}\")"
             },
             {
+              "line": 39,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 44,
               "before": "        print(f\"Initial logits shape: {logits.shape}\")  ",
-              "after": "        logger.debug(f\"Initial logits shape: {logits.shape}\")  "
+              "after": "        logger.debug(f\"Initial logits shape: {logits.shape}\")"
             },
             {
               "line": 46,
@@ -91,7 +112,7 @@
             {
               "line": 50,
               "before": "        print(f\"logits pair values: {logits}\") ",
-              "after": "        logger.debug(f\"logits pair values: {logits}\") "
+              "after": "        logger.debug(f\"logits pair values: {logits}\")"
             },
             {
               "line": 61,
@@ -109,9 +130,19 @@
               "after": "        logger.debug(f\"labels shape: {labels.shape}\")"
             },
             {
+              "line": 64,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 82,
               "before": "        print(f\"Single loss: {loss.item()}\")",
               "after": "        logger.debug(f\"Single loss: {loss.item()}\")"
+            },
+            {
+              "line": 88,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 89,
@@ -134,6 +165,11 @@
               "after": "        logger.debug(f\"Number of possible amino acid pairs: {len(i_amino)}\")  # C*C"
             },
             {
+              "line": 103,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 104,
               "before": "        print(f\"hi_terms shape: {hi_terms.shape}\")",
               "after": "        logger.debug(f\"hi_terms shape: {hi_terms.shape}\")"
@@ -154,6 +190,11 @@
               "after": "        logger.debug(f\"hj_terms range: [{hj_terms.min():.4f}, {hj_terms.max():.4f}]\")"
             },
             {
+              "line": 117,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 118,
               "before": "        print(f\"eij_terms shape: {eij_terms.shape}\")",
               "after": "        logger.debug(f\"eij_terms shape: {eij_terms.shape}\")"
@@ -162,6 +203,21 @@
               "line": 119,
               "before": "        print(f\"eij_terms range: [{eij_terms.min():.4f}, {eij_terms.max():.4f}]\")",
               "after": "        logger.debug(f\"eij_terms range: [{eij_terms.min():.4f}, {eij_terms.max():.4f}]\")"
+            },
+            {
+              "line": 134,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 142,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 149,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 150,
@@ -202,6 +258,31 @@
               "line": 163,
               "before": "        print(f\"logZ range: [{logZ.min():.4f}, {logZ.max():.4f}]\")",
               "after": "        logger.debug(f\"logZ range: [{logZ.min():.4f}, {logZ.max():.4f}]\")"
+            },
+            {
+              "line": 219,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 236,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 244,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 251,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 294,
+              "before": "    ",
+              "after": ""
             },
             {
               "line": 300,
@@ -249,6 +330,11 @@
               "after": "        logger.debug(f\"hj_terms_obs range: [{hj_terms_obs.min():.4f}, {hj_terms_obs.max():.4f}]\")"
             },
             {
+              "line": 344,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 345,
               "before": "        print(f\"eij_terms_obs shape: {eij_terms_obs.shape}\")",
               "after": "        logger.debug(f\"eij_terms_obs shape: {eij_terms_obs.shape}\")"
@@ -257,6 +343,21 @@
               "line": 346,
               "before": "        print(f\"eij_terms_obs range: [{eij_terms_obs.min():.4f}, {eij_terms_obs.max():.4f}]\")",
               "after": "        logger.debug(f\"eij_terms_obs range: [{eij_terms_obs.min():.4f}, {eij_terms_obs.max():.4f}]\")"
+            },
+            {
+              "line": 361,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 369,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 376,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 377,
@@ -314,6 +415,56 @@
               "after": "        logger.debug(f\"Total loss: {(pair_loss + l1_reg + l2_reg).item():.4f}\")"
             },
             {
+              "line": 414,
+              "before": "        return pair_loss + l1_reg + l2_reg  ",
+              "after": "        return pair_loss + l1_reg + l2_reg"
+            },
+            {
+              "line": 415,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 422,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 426,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 429,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 432,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 438,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 450,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 453,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 463,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 471,
               "before": "        print(f\"\\n=== HeaderBuilder.build ===\")",
               "after": "        logger.debug(f\"\\n=== HeaderBuilder.build ===\")"
@@ -329,7 +480,8 @@
               "after": "                logger.debug(f\"Added {head_name} head to the model.\")"
             }
           ],
-          "symbol_renames": {}
+          "symbol_renames": {},
+          "trailing_whitespace": "\n"
         },
         {
           "source_start_line": 632,
@@ -339,7 +491,7 @@
         {
           "target": "src/grip_models/data.py",
           "start_line": 25,
-          "end_line": 479,
+          "end_line": 478,
           "source_start_line": 637,
           "source_end_line": 1091,
           "replacements": [
@@ -349,14 +501,64 @@
               "after": "        logger.debug(\"Loading cached HLA mapping...\")"
             },
             {
+              "line": 12,
+              "before": "    ",
+              "after": ""
+            },
+            {
               "line": 13,
               "before": "    print(\"Creating new HLA mapping from FASTA...\")",
               "after": "    logger.debug(\"Creating new HLA mapping from FASTA...\")"
             },
             {
+              "line": 15,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 21,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 25,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 29,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 34,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 39,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 41,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 44,
               "before": "            print(f\"Warning: Invalid sequence for {standardized_allele}\")",
               "after": "            logger.debug(f\"Warning: Invalid sequence for {standardized_allele}\")"
+            },
+            {
+              "line": 46,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 50,
+              "before": "    ",
+              "after": ""
             },
             {
               "line": 51,
@@ -369,6 +571,26 @@
               "after": "    logger.debug('%s %s', \"Sample alleles:\", sorted(list(hla_mapping.keys()))[:5])"
             },
             {
+              "line": 53,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 56,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 59,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 66,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 68,
               "before": "        print(\"\\nHLA allele statistics:\")",
               "after": "        logger.debug(\"\\nHLA allele statistics:\")"
@@ -377,6 +599,16 @@
               "line": 69,
               "before": "        print(f\"Total alleles: {len(hla_mapping)}\")",
               "after": "        logger.debug(f\"Total alleles: {len(hla_mapping)}\")"
+            },
+            {
+              "line": 70,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 77,
+              "before": "                ",
+              "after": ""
             },
             {
               "line": 78,
@@ -389,6 +621,11 @@
               "after": "            logger.debug(f\"HLA-{locus}: {count} alleles\")"
             },
             {
+              "line": 81,
+              "before": "            ",
+              "after": ""
+            },
+            {
               "line": 83,
               "before": "        print(f\"Error creating HLA mapping: {e}\")",
               "after": "        logger.debug(f\"Error creating HLA mapping: {e}\")"
@@ -399,9 +636,79 @@
               "after": "class SequenceDataset(Dataset):"
             },
             {
+              "line": 89,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 95,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 98,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 101,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 106,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 113,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 120,
               "before": "        print(\"\\nApplying length filtering...\")",
               "after": "        logger.debug(\"\\nApplying length filtering...\")"
+            },
+            {
+              "line": 122,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 124,
+              "before": "        mhc_mask = df['mhc'].apply(lambda x: ",
+              "after": "        mhc_mask = df['mhc'].apply(lambda x:"
+            },
+            {
+              "line": 127,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 129,
+              "before": "        tcr_mask = df['cdr3_b'].apply(lambda x: ",
+              "after": "        tcr_mask = df['cdr3_b'].apply(lambda x:"
+            },
+            {
+              "line": 132,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 134,
+              "before": "        epitope_mask = df['epitope_sequence'].apply(lambda x: ",
+              "after": "        epitope_mask = df['epitope_sequence'].apply(lambda x:"
+            },
+            {
+              "line": 137,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 141,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 143,
@@ -439,19 +746,255 @@
               "after": "        logger.debug(f\"Final sequences: {len(filtered_df)}\")"
             },
             {
+              "line": 150,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 153,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 159,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 165,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 168,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 171,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 178,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 182,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 193,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 199,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 202,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 205,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 209,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 211,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 213,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 216,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 217,
               "before": "        print(f\"After preprocessing: {len(df)} valid sequences\")",
               "after": "        logger.debug(f\"After preprocessing: {len(df)} valid sequences\")"
             },
             {
+              "line": 226,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 230,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 239,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 260,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 264,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 272,
               "before": "        print(f\"Sample {idx}: epitope='{epitope_seq}' mhc='{mhc_seq[:20]}...'\")",
               "after": "        logger.debug(f\"Sample {idx}: epitope='{epitope_seq}' mhc='{mhc_seq[:20]}...'\")"
+            },
+            {
+              "line": 280,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 288,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 296,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 304,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 312,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 321,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 324,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 327,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 331,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 340,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 354,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 363,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 372,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 376,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 382,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 388,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 393,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 399,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 404,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 409,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 414,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 419,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 428,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 436,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 444,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 452,
+              "before": "            ",
+              "after": ""
             }
           ],
           "symbol_renames": {
             "DataGenerator": "SequenceDataset"
-          }
+          },
+          "trailing_whitespace": "\n"
         },
         {
           "target": "src/grip_models/model/energy.py",
@@ -464,6 +1007,131 @@
               "line": 1,
               "before": "class myModel(nn.Module):",
               "after": "class BaseEnergyModel(nn.Module):"
+            },
+            {
+              "line": 2,
+              "before": "    def __init__(self, config): ",
+              "after": "    def __init__(self, config):"
+            },
+            {
+              "line": 9,
+              "before": "        self.loss_head = self.heads.get('losshead', None) ",
+              "after": "        self.loss_head = self.heads.get('losshead', None)"
+            },
+            {
+              "line": 32,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 37,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 42,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 45,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 57,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 62,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 65,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 70,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 73,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 89,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 94,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 97,
+              "before": "            start=-self.relpos_k, ",
+              "after": "            start=-self.relpos_k,"
+            },
+            {
+              "line": 98,
+              "before": "            end=self.relpos_k + 1, ",
+              "after": "            end=self.relpos_k + 1,"
+            },
+            {
+              "line": 101,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 106,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 113,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 120,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 124,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 131,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 143,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 144,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 150,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 157,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 159,
@@ -481,9 +1149,44 @@
               "after": "        logger.debug(f\"labels shape: {labels.shape if labels is not None else 'None'}\")"
             },
             {
+              "line": 162,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 167,
+              "before": "            ",
+              "after": ""
+            },
+            {
               "line": 170,
               "before": "                print(f\"Warning: Unexpected seq_logits shape: {seq_logits.shape}\")",
               "after": "                logger.debug(f\"Warning: Unexpected seq_logits shape: {seq_logits.shape}\")"
+            },
+            {
+              "line": 176,
+              "before": "                ",
+              "after": ""
+            },
+            {
+              "line": 180,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 184,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 190,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 196,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 200,
@@ -496,9 +1199,124 @@
               "after": "                    logger.debug(f\"Warning: Could not reshape pair_logits from {pair_logits.shape}\")"
             },
             {
+              "line": 210,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 215,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 219,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 232,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 233,
+              "before": "            #valid_pairs = valid_len * (valid_len - 1) / 2  ",
+              "after": "            #valid_pairs = valid_len * (valid_len - 1) / 2"
+            },
+            {
+              "line": 240,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 243,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 249,
               "before": "        print(\"\\n=== Input Shapes and Data ===\")",
               "after": "        logger.debug(\"\\n=== Input Shapes and Data ===\")"
+            },
+            {
+              "line": 256,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 267,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 277,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 285,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 291,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 297,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 302,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 307,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 312,
+              "before": "            ",
+              "after": ""
+            },
+            {
+              "line": 317,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 323,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 329,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 338,
+              "before": "            (epitope_len, epitope_single, batch['epitope_ri'], epitope_type, ",
+              "after": "            (epitope_len, epitope_single, batch['epitope_ri'], epitope_type,"
+            },
+            {
+              "line": 341,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 349,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 355,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 356,
@@ -521,6 +1339,26 @@
               "after": "        logger.debug(f\"combined_types: {combined_types.shape}\")"
             },
             {
+              "line": 360,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 364,
+              "before": "            batch_size, total_len, total_len, self.pair_channel, ",
+              "after": "            batch_size, total_len, total_len, self.pair_channel,"
+            },
+            {
+              "line": 367,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 376,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 378,
               "before": "        print(f\"\\nPair representation input shape: {combined_encoded.shape}\")",
               "after": "        logger.debug(f\"\\nPair representation input shape: {combined_encoded.shape}\")"
@@ -541,14 +1379,34 @@
               "after": "        logger.debug(f\"combined_z_j: {combined_z_j.shape}\")"
             },
             {
+              "line": 384,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 387,
               "before": "        print(f\"\\nType pair embeddings: {type_pair_embeddings.shape}\")",
               "after": "        logger.debug(f\"\\nType pair embeddings: {type_pair_embeddings.shape}\")"
             },
             {
+              "line": 388,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 393,
               "before": "        print(f\"\\nFinal combined pair shape: {combined_pair.shape}\")",
               "after": "        logger.debug(f\"\\nFinal combined pair shape: {combined_pair.shape}\")"
+            },
+            {
+              "line": 394,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 399,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 401,
@@ -571,6 +1429,16 @@
               "after": "        logger.debug(f\"pair: {combined_pair.shape}\")"
             },
             {
+              "line": 405,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 407,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 408,
               "before": "        print(f\"\\nEvoformer output shapes:\")",
               "after": "        logger.debug(f\"\\nEvoformer output shapes:\")"
@@ -584,6 +1452,16 @@
               "line": 410,
               "before": "        print(f\"pair_out: {pair_out.shape}\")",
               "after": "        logger.debug(f\"pair_out: {pair_out.shape}\")"
+            },
+            {
+              "line": 411,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 415,
+              "before": "        ",
+              "after": ""
             },
             {
               "line": 417,
@@ -601,6 +1479,21 @@
               "after": "        logger.debug(f\"epitope_start: {epitope_start}, epitope_end: {epitope_end}\")"
             },
             {
+              "line": 420,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 428,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 431,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 432,
               "before": "        print(f\"\\nShape debugging after slicing:\")",
               "after": "        logger.debug(f\"\\nShape debugging after slicing:\")"
@@ -616,6 +1509,16 @@
               "after": "        logger.debug(f\"epitope_pair shape: {epitope_pair.shape}\")"
             },
             {
+              "line": 435,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 440,
+              "before": "        ",
+              "after": ""
+            },
+            {
               "line": 445,
               "before": "            print(f\"Processing head: {head_name}\")",
               "after": "            logger.debug(f\"Processing head: {head_name}\")"
@@ -626,6 +1529,16 @@
               "after": "                logger.debug(f\"{head_name} output added to headers.\")"
             },
             {
+              "line": 454,
+              "before": "        ",
+              "after": ""
+            },
+            {
+              "line": 458,
+              "before": "            ",
+              "after": ""
+            },
+            {
               "line": 462,
               "before": "            print(\"\\nEnergy values:\")",
               "after": "            logger.debug(\"\\nEnergy values:\")"
@@ -634,6 +1547,11 @@
               "line": 464,
               "before": "                print(f\"{k}: {v.item():.4f}\")",
               "after": "                logger.debug(f\"{k}: {v.item():.4f}\")"
+            },
+            {
+              "line": 465,
+              "before": "        ",
+              "after": ""
             }
           ],
           "symbol_renames": {
@@ -653,7 +1571,28 @@
           "end_line": 201,
           "source_start_line": 1,
           "source_end_line": 201,
-          "replacements": [],
+          "replacements": [
+            {
+              "line": 58,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 64,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 73,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 200,
+              "before": "    ",
+              "after": ""
+            }
+          ],
           "symbol_renames": {}
         }
       ]
@@ -666,11 +1605,23 @@
         {
           "target": "src/grip_models/model/primitives.py",
           "start_line": 1,
-          "end_line": 78,
+          "end_line": 69,
           "source_start_line": 1,
           "source_end_line": 78,
-          "replacements": [],
-          "symbol_renames": {}
+          "replacements": [
+            {
+              "line": 20,
+              "before": "    ",
+              "after": ""
+            },
+            {
+              "line": 50,
+              "before": "    # translation:  L 3   ",
+              "after": "    # translation:  L 3"
+            }
+          ],
+          "symbol_renames": {},
+          "trailing_whitespace": "\n\n\n\n\n\n\n\n    "
         }
       ]
     },
@@ -687,7 +1638,7 @@
         {
           "target": "src/grip_models/model/msa.py",
           "start_line": 17,
-          "end_line": 134,
+          "end_line": 127,
           "source_start_line": 9,
           "source_end_line": 126,
           "replacements": [
@@ -722,6 +1673,41 @@
               "after": "        self.olinear = primitives.Linear(N_head*c,m_dim)"
             },
             {
+              "line": 17,
+              "before": "        # m : N L 32  ",
+              "after": "        # m : N L 32"
+            },
+            {
+              "line": 18,
+              "before": "        B,N,L,D = m.shape  ",
+              "after": "        B,N,L,D = m.shape"
+            },
+            {
+              "line": 20,
+              "before": "        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c ",
+              "after": "        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c"
+            },
+            {
+              "line": 21,
+              "before": "        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c ",
+              "after": "        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c"
+            },
+            {
+              "line": 25,
+              "before": "        #print(\"q shape:\", q.shape) ",
+              "after": "        #print(\"q shape:\", q.shape)"
+            },
+            {
+              "line": 28,
+              "before": " ",
+              "after": ""
+            },
+            {
+              "line": 32,
+              "before": " ",
+              "after": ""
+            },
+            {
               "line": 39,
               "before": "            print(\"NaN detected in msarow\")",
               "after": "            logger.debug(\"NaN detected in msarow\")"
@@ -750,6 +1736,26 @@
               "line": 55,
               "before": "        self.olinear = basic.Linear(N_head*c,m_dim)",
               "after": "        self.olinear = primitives.Linear(N_head*c,m_dim)"
+            },
+            {
+              "line": 58,
+              "before": "        # m : N L 32  ",
+              "after": "        # m : N L 32"
+            },
+            {
+              "line": 59,
+              "before": "        B,N,L,D = m.shape  ",
+              "after": "        B,N,L,D = m.shape"
+            },
+            {
+              "line": 61,
+              "before": "        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c ",
+              "after": "        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c"
+            },
+            {
+              "line": 62,
+              "before": "        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c ",
+              "after": "        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c"
             },
             {
               "line": 83,
@@ -784,7 +1790,8 @@
           ],
           "symbol_renames": {
             "basic": "primitives"
-          }
+          },
+          "trailing_whitespace": "\n\n        \n\n\n\n\n"
         }
       ]
     },
@@ -801,7 +1808,7 @@
         {
           "target": "src/grip_models/model/pair.py",
           "start_line": 16,
-          "end_line": 158,
+          "end_line": 152,
           "source_start_line": 8,
           "source_end_line": 150,
           "replacements": [
@@ -901,6 +1908,11 @@
               "after": "        logger.debug('%s %s', \"The attention shape for pair is:\", att.shape)"
             },
             {
+              "line": 72,
+              "before": "       ",
+              "after": ""
+            },
+            {
               "line": 88,
               "before": "        self.qlinear=basic.Linear(z_dim,c*N_head)",
               "after": "        self.qlinear=primitives.Linear(z_dim,c*N_head)"
@@ -944,11 +1956,17 @@
               "line": 133,
               "before": "        self.linear2=basic.Linear(z_dim*c_expand,z_dim)",
               "after": "        self.linear2=primitives.Linear(z_dim*c_expand,z_dim)"
+            },
+            {
+              "line": 137,
+              "before": "        return a ",
+              "after": "        return a"
             }
           ],
           "symbol_renames": {
             "basic": "primitives"
-          }
+          },
+          "trailing_whitespace": "\n\n\n\n\n\n"
         }
       ]
     },
@@ -960,7 +1978,7 @@
         {
           "target": "src/grip_models/model/evoformer.py",
           "start_line": 1,
-          "end_line": 106,
+          "end_line": 97,
           "source_start_line": 1,
           "source_end_line": 106,
           "replacements": [
@@ -1013,12 +2031,23 @@
               "line": 20,
               "before": "        self.pair_trans = EvoPair_flash.PairTrans(z_dim)",
               "after": "        self.pair_trans = pair.PairTrans(z_dim)"
+            },
+            {
+              "line": 40,
+              "before": "    #    return self.pair_triend(z) + z      ",
+              "after": "    #    return self.pair_triend(z) + z"
+            },
+            {
+              "line": 42,
+              "before": "        return self.pair_trans(z) + z  ",
+              "after": "        return self.pair_trans(z) + z"
             }
           ],
           "symbol_renames": {
             "EvoPair_flash": "pair",
             "EvoMSA_flash": "msa"
-          }
+          },
+          "trailing_whitespace": "\n\n\n\n\n\n\n\n\n"
         }
       ]
     }
@@ -1026,39 +2055,39 @@
   "modules": {
     "src/grip_models/configuration.py": {
       "prefix_lines": 6,
-      "sha256": "79c5d550ba35dabc674bb4bd9e30f0aaccf55a4d66162e3e1b0e4351e86187b7"
+      "sha256": "b92c6eca95e400019d20a721e310b805fb06b8b476e3b2220c14bbb273775630"
     },
     "src/grip_models/data.py": {
       "prefix_lines": 15,
-      "sha256": "f88c4bbffbe3f2faedf8801fa918d5333ce072aa102b32c3ab99c1af0c2e080f"
+      "sha256": "f85d0d733d5187918568e16cab7de02dd1df48a8a996ee4bb92da66d3df6683f"
     },
     "src/grip_models/model/heads.py": {
       "prefix_lines": 18,
-      "sha256": "41b31fb38d5af7a84bd61d85cc9af4ed37acffff78952346707c0338bcf553c2"
+      "sha256": "32af5a823bbd5669adb0f063590c1b4dc20eef2ee5baa8f9600932e140761f66"
     },
     "src/grip_models/model/energy.py": {
       "prefix_lines": 16,
-      "sha256": "a3d99e98e280497536eaa70ee9afca74aad75f19c52191aa748ed30d23824de4"
+      "sha256": "728a07e413c8c40fe45a84688511a6b1144874095e1f2292a02c9f6eb6512f41"
     },
     "src/grip_models/model/layers.py": {
       "prefix_lines": 0,
-      "sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1"
+      "sha256": "cae331815cfd96fc1e4c7be9df6071b31efc1d116de80fb6ed3fa0ced4f55d67"
     },
     "src/grip_models/model/primitives.py": {
       "prefix_lines": 0,
-      "sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9"
+      "sha256": "b0540fd8d906bca87c09507c0a1a2cea0dcfec707e0dfe2f739069fa3b8692b5"
     },
     "src/grip_models/model/msa.py": {
       "prefix_lines": 16,
-      "sha256": "380f5ebb2c2fa34ea65b21dfff71941cf1995248ca69d569c2a7617d3c60ee57"
+      "sha256": "ed20b7d6deb443d758b96294a6880592092fe3b1373e40925a029b251320259e"
     },
     "src/grip_models/model/pair.py": {
       "prefix_lines": 15,
-      "sha256": "0b986379c0fe7f37b69df14e4c656108b2b00ff7252b7ac6e2c94e9c4e741738"
+      "sha256": "8f514533a7035ad52801ecb1db07317349fb25171667df5928e4b1ad23020a5d"
     },
     "src/grip_models/model/evoformer.py": {
       "prefix_lines": 0,
-      "sha256": "cbe2e3a543e4bcb83c7dec061048cd02ab46db51ebf93ccfd28a503948290bd6"
+      "sha256": "1586300f7b5dd953818dc0386dd0f3227a5d3ff34b3d2d62bbcc3a0b84af253d"
     }
   }
 }

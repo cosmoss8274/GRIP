@@ -20,13 +20,13 @@ class SeqHead(nn.Module):
     def __init__(self, config, num_in_channel):
         super().__init__()
         c = config
-        
+
         self.norm = LayerNorm(num_in_channel)
         # Use len(restypes_with_x) instead of importing from residue_constants
         #self.proj = Linear(num_in_channel, len(restypes_with_x), init='final')
         self.proj = nn.Linear(num_in_channel, len(restypes_with_x), bias=True)
         self.config = config
-        
+
     def forward(self, headers, representations, batch):
         if 'seq' not in representations:
             logger.debug("Error: 'seq' not in representations!")
@@ -34,7 +34,7 @@ class SeqHead(nn.Module):
         logger.debug(f"Linear weights (proj): {self.proj.weight}")
         logger.debug(f"Linear bias (proj): {self.proj.bias}")
 
-        
+
         x = representations['seq']
         logger.debug(f"SeqHead input shape: {x.shape}")
         x = self.norm(x)
@@ -54,18 +54,18 @@ class PairHead(nn.Module):
         self.norm = LayerNorm(num_in_channel)
         self.proj = nn.Linear(num_in_channel, self.num_token * self.num_token, bias=True)
         self.config = config
-        
+
     def forward(self, headers, representations, batch):
         x = representations['pair']
         x = self.norm(x)
         logits = self.proj(x)
-        logger.debug(f"Initial logits shape: {logits.shape}")  
+        logger.debug(f"Initial logits shape: {logits.shape}")
         logits = rearrange(logits, 'b i j (a c) -> b i j a c', a=self.num_token)
         logger.debug(f"After first rearrange: {logits.shape}")
         logits = rearrange(0.5 * (logits + rearrange(logits, 'b i j a c -> b j i c a')), 'b i j a c -> b i j (a c)')
         #logits = 0.5 * (logits + rearrange(logits, 'b i j a c -> b j i c a'))
         logger.debug(f"Final logits shape: {logits.shape}")
-        logger.debug(f"logits pair values: {logits}") 
+        logger.debug(f"logits pair values: {logits}")
         return dict(logits=logits)
 
 class LossHead(nn.Module):
@@ -79,7 +79,7 @@ class LossHead(nn.Module):
         logger.debug("\n=== _compute_single_loss ===")
         logger.debug(f"logits shape: {logits.shape}")
         logger.debug(f"labels shape: {labels.shape}")
-        
+
         '''
         # Direct cross entropy for single residue prediction
         loss = F.cross_entropy(
@@ -103,7 +103,7 @@ class LossHead(nn.Module):
     def compute_partition_function(self, seq_logits, pair_logits, labels, num_residues, batch_size):
         num_classes = seq_logits.shape[-1]
         device = seq_logits.device
-        
+
         logger.debug("\nPartition Function Debug:")
         logger.debug(f"seq_logits shape: {seq_logits.shape}")  # [B, N, C]
         logger.debug(f"pair_logits initial shape: {pair_logits.shape}")  # [B, N, N, C, C]
@@ -118,7 +118,7 @@ class LossHead(nn.Module):
         # 1. Single site terms for all possible amino acids
         hi_terms = seq_logits[:, :, i_amino].unsqueeze(2)  # [B, N, 1, C*C]
         hj_terms = seq_logits[:, :, j_amino].unsqueeze(1)  # [B, 1, N, C*C]
-        
+
         logger.debug(f"hi_terms shape: {hi_terms.shape}")
         logger.debug(f"hi_terms range: [{hi_terms.min():.4f}, {hi_terms.max():.4f}]")
         logger.debug(f"hj_terms shape: {hj_terms.shape}")
@@ -132,7 +132,7 @@ class LossHead(nn.Module):
             i_amino[None, None, None, :],
             j_amino[None, None, None, :]
         ]  # [B, N, N, C*C]
-        
+
         logger.debug(f"eij_terms shape: {eij_terms.shape}")
         logger.debug(f"eij_terms range: [{eij_terms.min():.4f}, {eij_terms.max():.4f}]")
 
@@ -149,7 +149,7 @@ class LossHead(nn.Module):
                 i_amino[None, None, :],
                 xk.unsqueeze(-1).expand(-1, -1, num_classes*num_classes)
             ]  # [B, N, C*C]
-            
+
             ejk_term = pair_logits[
                 torch.arange(batch_size, device=device)[:, None, None],
                 torch.arange(num_residues, device=device)[None, :, None],
@@ -157,14 +157,14 @@ class LossHead(nn.Module):
                 j_amino[None, None, :],
                 xk.unsqueeze(-1).expand(-1, -1, num_classes*num_classes)
             ]  # [B, N, C*C]
-            
+
             eik_list.append(eik_term)
             ejk_list.append(ejk_term)
 
         # Stack along residue dimension
         eik = torch.stack(eik_list, dim=2)  # [B, N, N, C*C]
         ejk = torch.stack(ejk_list, dim=2)  # [B, N, N, C*C]
-        
+
         logger.debug(f"eik shape: {eik.shape}")
         logger.debug(f"eik range: [{eik.min():.4f}, {eik.max():.4f}]")
         logger.debug(f"ejk shape: {ejk.shape}")
@@ -234,7 +234,7 @@ class LossHead(nn.Module):
             i_obs.unsqueeze(-1).expand(-1, -1, num_residues),
             j_obs.unsqueeze(1).expand(-1, num_residues, -1)
         ]  # [B, N, N]
-        
+
         print(f"eij_terms_obs shape: {eij_terms_obs.shape}")
         print(f"eij_terms_obs range: [{eij_terms_obs.min():.4f}, {eij_terms_obs.max():.4f}]")
 
@@ -251,7 +251,7 @@ class LossHead(nn.Module):
                 i_obs,
                 xk.expand(-1, num_residues)
             ]  # [B, N]
-            
+
             ejk_term = pair_logits[
                 torch.arange(batch_size, device=device)[:, None],
                 torch.arange(num_residues, device=device)[None, :],
@@ -259,14 +259,14 @@ class LossHead(nn.Module):
                 j_obs,
                 xk.expand(-1, num_residues)
             ]  # [B, N]
-            
+
             eik_obs_list.append(eik_term)
             ejk_obs_list.append(ejk_term)
 
         # Stack along residue dimension
         eik_terms_obs = torch.stack(eik_obs_list, dim=2)  # [B, N, N]
         ejk_terms_obs = torch.stack(ejk_obs_list, dim=2)  # [B, N, N]
-        
+
         print(f"eik_terms_obs shape: {eik_terms_obs.shape}")
         print(f"eik_terms_obs range: [{eik_terms_obs.min():.4f}, {eik_terms_obs.max():.4f}]")
         print(f"ejk_terms_obs shape: {ejk_terms_obs.shape}")
@@ -309,7 +309,7 @@ class LossHead(nn.Module):
 
         return pseudo_nll + l1_reg + l2_reg
         '''
-    
+
     def _compute_pair_loss(self, pair_logits, seq_logits, labels, z_matrix=None):
         batch_size, num_residues = labels.shape
         num_classes = seq_logits.shape[-1]
@@ -359,7 +359,7 @@ class LossHead(nn.Module):
             i_obs.unsqueeze(-1).expand(-1, -1, num_residues),
             j_obs.unsqueeze(1).expand(-1, num_residues, -1)
         ]  # [B, N, N]
-        
+
         logger.debug(f"eij_terms_obs shape: {eij_terms_obs.shape}")
         logger.debug(f"eij_terms_obs range: [{eij_terms_obs.min():.4f}, {eij_terms_obs.max():.4f}]")
 
@@ -376,7 +376,7 @@ class LossHead(nn.Module):
                 i_obs,
                 xk.expand(-1, num_residues)
             ]  # [B, N]
-            
+
             ejk_term = pair_logits_reshaped[
                 torch.arange(batch_size, device=device)[:, None],
                 torch.arange(num_residues, device=device)[None, :],
@@ -384,14 +384,14 @@ class LossHead(nn.Module):
                 j_obs,
                 xk.expand(-1, num_residues)
             ]  # [B, N]
-            
+
             eik_obs_list.append(eik_term)
             ejk_obs_list.append(ejk_term)
 
         # Stack along residue dimension
         eik_terms_obs = torch.stack(eik_obs_list, dim=2)  # [B, N, N]
         ejk_terms_obs = torch.stack(ejk_obs_list, dim=2)  # [B, N, N]
-        
+
         logger.debug(f"eik_terms_obs shape: {eik_terms_obs.shape}")
         logger.debug(f"eik_terms_obs range: [{eik_terms_obs.min():.4f}, {eik_terms_obs.max():.4f}]")
         logger.debug(f"ejk_terms_obs shape: {ejk_terms_obs.shape}")
@@ -429,31 +429,31 @@ class LossHead(nn.Module):
         logger.debug(f"l2_reg: {l2_reg.item():.4f}")
         logger.debug(f"Total loss: {(pair_loss + l1_reg + l2_reg).item():.4f}")
 
-        return pair_loss + l1_reg + l2_reg  
-                
+        return pair_loss + l1_reg + l2_reg
+
     def forward(self, headers, representations, batch):
         """
         Compute total loss following equation (4) in paper:
         L = Lsingle + Lpair
         """
         losses = {}
-        
+
         # Get predictions
         seq_head_outputs = headers.get('seqhead', {})
         pair_head_outputs = headers.get('pairhead', {})
-        
+
         seq_logits = seq_head_outputs.get('logits') if seq_head_outputs else None
         pair_logits = pair_head_outputs.get('logits') if pair_head_outputs else None
-        
+
         # Get labels
         labels = batch.get('aatype')
-        
+
         # Compute losses
         if seq_logits is not None and labels is not None:
             losses['single'] = self._compute_single_loss(seq_logits, labels)
         else:
             losses['single'] = torch.tensor(0.0, device=seq_logits.device if seq_logits is not None else 'cuda', requires_grad=True)
-            
+
         if pair_logits is not None and seq_logits is not None and labels is not None:
             # Get z_matrix from representations if available
             z_matrix = representations.get('pair')
@@ -465,10 +465,10 @@ class LossHead(nn.Module):
             )
         else:
             losses['pair'] = torch.tensor(0.0, device=pair_logits.device if pair_logits is not None else 'cuda', requires_grad=True)
-            
+
         # Total loss
         losses['total'] = losses['single'] + losses['pair']
-        
+
         return losses
 
 
@@ -478,7 +478,7 @@ class FoldingHead(nn.Module):
         super().__init__()
         self.struct_module = folding.StructureModule(config, num_in_seq_channel, num_in_pair_channel)
         self.config = config
-        
+
     def forward(self, headers, representations, batch):
         return self.struct_module(representations, batch)
 
@@ -514,4 +514,3 @@ class HeaderBuilder:
                 logger.debug(f"Added {head_name} head to the model.")
 
         return heads
-

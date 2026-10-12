@@ -79,5 +79,3 @@ def load_config(config_path):
 
     config = dict_to_namespace(default_config)
     return config
-
-

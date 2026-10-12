@@ -55,13 +55,13 @@ def load_config(config_path):
             "z": 128    # Attention heads dimension
         }
     }
-    
+
     if config_path:
         with open(config_path) as f:
             user_config = json.load(f)
             # Merge user config with defaults
             default_config.update(user_config)
-    
+
     def dict_to_namespace(d):
         namespace = SimpleNamespace()
         for key, value in d.items():
@@ -70,7 +70,7 @@ def load_config(config_path):
             else:
                 setattr(namespace, key, value)
         return namespace
-    
+
     return dict_to_namespace(default_config)
 
 
@@ -197,5 +197,5 @@ def dgram_from_positions(positions, num_bins, min_bin, max_bin):
 
 def mask_mean(x, mask, dim, eps=1e-10):
     assert x.dim() == 4 and mask.dim() == 3 and dim in [1, 2]
-    
+
     return torch.sum(x * mask[:,:,:,None], dim=dim) / (eps + torch.sum(mask, dim=dim)[:,:,None])

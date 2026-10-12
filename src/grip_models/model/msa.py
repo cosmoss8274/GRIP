@@ -30,22 +30,22 @@ class MSARow(nn.Module):
         self.olinear = primitives.Linear(N_head*c,m_dim)
 
     def forward(self,m,z,mask= True):
-        # m : N L 32  
-        B,N,L,D = m.shape  
+        # m : N L 32
+        B,N,L,D = m.shape
         m = self.norm1(m)
-        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c 
-        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c 
+        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c
+        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c
         v = self.vlinear(m).reshape(B,N,L,self.N_head,self.c)
         bias = self.zlinear(self.norm_z(z))
         #print("bias shape:", bias.shape)
-        #print("q shape:", q.shape) 
+        #print("q shape:", q.shape)
         g = torch.sigmoid(self.glinear(m)).reshape(B, N,L,self.N_head,self.c)
         att=torch.einsum('bnqhc,bnvhc->bnqvh',q,k) * (self.sq_c) + bias[:,None,:,:,:] # rq rv h #[N, L, L, H]
- 
+
         #print("m shape:", m.shape)
         #print("att shape:", att.shape)
 
- 
+
         att=F.softmax(att,dim=3)
         #print("The attention for MSA row is:", {att})
         o = torch.einsum('bnqvh,bnvhc->bnqhc',att,v) * g
@@ -71,11 +71,11 @@ class MSACol(nn.Module):
         self.olinear = primitives.Linear(N_head*c,m_dim)
 
     def forward(self,m):
-        # m : N L 32  
-        B,N,L,D = m.shape  
+        # m : N L 32
+        B,N,L,D = m.shape
         m = self.norm1(m)
-        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c 
-        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c 
+        q = self.qlinear(m).reshape(B,N,L,self.N_head,self.c) #s rq h c
+        k = self.klinear(m).reshape(B,N,L,self.N_head,self.c) #s rv h c
         v = self.vlinear(m).reshape(B,N,L,self.N_head,self.c)
 
         g = torch.sigmoid(self.glinear(m)).reshape(B,N,L,self.N_head,self.c)
@@ -125,10 +125,3 @@ class MSAOPM(nn.Module):
         o = self.linear3(o.reshape(B,L,L,-1))
 
         return o
-
-
-        
-
-
-
-
