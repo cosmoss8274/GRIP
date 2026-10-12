@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "prepared_date": "2026-10-12",
+  "scope": "GRIP core development package, documentation, branding and verification tools.",
+  "files": [
+    {
+      "path": ".github/workflows/checks.yml",
+      "sha256": "936b5d6a89c8b4ae6a481bb30ce3dd9e18a0e691bc639a5b58ea89008d47d9a4"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "498bf8c66d366580d3189fcb577c97c9df3c0e75be0ddfc1240d9f1fb97a0e1f"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "0796514881ac5e930694fceaca461229bb33eaac56e5b75e25c3921d766bcefd"
+    },
+    {
+      "path": "README.md",
+      "sha256": "b47f2022970f6378387a8eca8859b985b8bb784790f2f5201641bd13b812e3b0"
+    },
+    {
+      "path": "docs/assets/grip-logo.png",
+      "sha256": "ca8a7f955be021dcf5b5093c5036de93c41f2ecbad86a943826df7ed45910a40"
+    },
+    {
+      "path": "docs/assets/grip-overview.svg",
+      "sha256": "d9f97dc9d116d45bfbf278755c68c394107970866d3eb2115836bd67e8966758"
+    },
+    {
+      "path": "docs/assets/grip-social-preview.png",
+      "sha256": "4b2718771751bb46e19db83fa6dfa327fd119cf504e3ef26d8bf8b4f315d0055"
+    },
+    {
+      "path": "docs/reproducibility.md",
+      "sha256": "5bce1dc18e14ea2a21145d36914b6dc71ae941ce151057985d6e06cc1e4eca10"
+    },
+    {
+      "path": "docs/validation/source-parity.json",
+      "sha256": "f164778f6d8a3b221c3d1961a6026aa7411a8f59d5073eaae0156c134a8c9cec"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "ba12f8681a284740844739137998ce7f95f5e9cb7f1cbb0a72b3e6f0052dab41"
+    },
+    {
+      "path": "requirements-test.txt",
+      "sha256": "69b94658b69d6e923b80b471f63749881e774471b306bf8bc5421e4c9538afb7"
+    },
+    {
+      "path": "src/grip_models/EvoMSA_flash.py",
+      "sha256": "e6d82e11dd9d3dff0c8e1ae5de995f76594934123a893b042a507f1b8397ea27"
+    },
+    {
+      "path": "src/grip_models/EvoPair_flash.py",
+      "sha256": "2e0b7b29bb94200875be9e7bada42c928006a2b607ccced1a7a47b86538ffdd6"
+    },
+    {
+      "path": "src/grip_models/__init__.py",
+      "sha256": "bb8c102c2dd93bc2787112fe6602d5461282e5b3b6457f0dcfed745a1d659bff"
+    },
+    {
+      "path": "src/grip_models/basic.py",
+      "sha256": "7e4b1a5e5eac450cd90b29aaff08a08aab8e308b8f93eef8d042719b5b3b7da9"
+    },
+    {
+      "path": "src/grip_models/checkpoints.py",
+      "sha256": "36f783db2e775b648127565e2c444eac2dc9cb3c64f2c221dd87d9f09be00fc4"
+    },
+    {
+      "path": "src/grip_models/common_modules.py",
+      "sha256": "a607e30a78b66f9cf6e5f7ba14c5b1427dac84cfd16bc33949fc0c2336f547d1"
+    },
+    {
+      "path": "src/grip_models/evoformer_fast.py",
+      "sha256": "49a3dded521fdd2fecc6e2a982305f4ebeb5323dcc1c6a60127fc452f75f1ea4"
+    },
+    {
+      "path": "src/grip_models/inference.py",
+      "sha256": "183d7d8057870503db6a20ad99c1bf951bb9556f35bb6aeb6e6f9741246353d4"
+    },
+    {
+      "path": "src/grip_models/sequence.py",
+      "sha256": "880ffe2cc609029c0828ea38a3e679dafc1d5f8e951c429da35081190364c67b"
+    },
+    {
+      "path": "src/grip_models/source_changes.json",
+      "sha256": "64c33665ece253074d1d1e9dc7174f310c2a82eaed2e2203237ab4dcba029307"
+    },
+    {
+      "path": "tests/core/__init__.py",
+      "sha256": "ff35ea199731485fc3d41769553e00185a37a6b6c72ba7c0facefb0f466feae0"
+    },
+    {
+      "path": "tests/core/test_public_api.py",
+      "sha256": "11621b44a10f7315aaf747c688ba7ed2e342ed034557c8fc39d14fd972b786e6"
+    },
+    {
+      "path": "tests/core/test_source_parity.py",
+      "sha256": "d5d4d06b1051baab30d9f141ec047df05e0f80d7f7214bb33487e3be7a0c93c7"
+    },
+    {
+      "path": "tests/runtime/test_checkpoints.py",
+      "sha256": "edbb3347a6261368cdc2f4aeff3c232862d512f6124530d84a1a1391fe38ce71"
+    },
+    {
+      "path": "tests/runtime/test_inference_contract.py",
+      "sha256": "cccf92e488c8514c59ab59e3d1940891711c019a94daa73ce95aaeca030dbca0"
+    },
+    {
+      "path": "tests/source/test_verify_source.py",
+      "sha256": "48a7fdcbafe2077f746d66eb1981ecf221a611e73751e59f5991af55c6022353"
+    },
+    {
+      "path": "tools/check_numerical_parity.py",
+      "sha256": "5145e1824d0c9bea6f984d8f33ad14a02e94859f48cf4bf18aa7ea8169f4dba3"
+    },
+    {
+      "path": "tools/verify_source.py",
+      "sha256": "4953e7b40614669ab58db1b95f02ae1147e42189b366e8f4bf7aeb5dd202b9fb"
+    }
+  ]
+}
