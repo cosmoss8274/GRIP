@@ -23,8 +23,7 @@ def _digest_handle(handle):
 
 def _file_signature(handle):
     info = os.fstat(handle.fileno())
-    return (info.st_dev, info.st_ino, info.st_size,
-            info.st_mtime_ns, info.st_ctime_ns)
+    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
 
 
 def load_weights(model, checkpoint_path, *, sha256, state_dict_key=None):
@@ -50,7 +49,9 @@ def load_weights(model, checkpoint_path, *, sha256, state_dict_key=None):
     if state_dict_key is not None and (
         not isinstance(state_dict_key, str) or not state_dict_key
     ):
-        raise TypeError("state_dict_key must be None or a nonempty top-level key string")
+        raise TypeError(
+            "state_dict_key must be None or a nonempty top-level key string"
+        )
 
     local_path = os.fspath(checkpoint_path)
     if not isinstance(local_path, str) or not local_path:
@@ -110,10 +111,16 @@ def load_weights(model, checkpoint_path, *, sha256, state_dict_key=None):
 
     for key, reference in expected.items():
         value = candidate[key]
-        if not isinstance(reference, torch.Tensor) or not isinstance(value, torch.Tensor):
-            raise TypeError(f"State entry {key!r} must be a tensor in both dictionaries")
+        if not isinstance(reference, torch.Tensor) or not isinstance(
+            value, torch.Tensor
+        ):
+            raise TypeError(
+                f"State entry {key!r} must be a tensor in both dictionaries"
+            )
         if reference.is_meta or value.is_meta:
-            raise ValueError(f"State entry {key!r} must contain concrete, non-meta tensors")
+            raise ValueError(
+                f"State entry {key!r} must contain concrete, non-meta tensors"
+            )
         if tuple(value.shape) != tuple(reference.shape):
             raise ValueError(f"State entry {key!r} has a mismatched tensor shape")
         if value.dtype != reference.dtype:
