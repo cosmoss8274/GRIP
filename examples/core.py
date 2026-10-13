@@ -39,25 +39,15 @@ def run(args):
             "tensor_count": len(batch),
         }
 
-    from grip_models import score_record
+    from grip_models import BaseEnergyModel, load_weights, score_record
 
-    if args.checkpoint is None:
-        from grip_models import load_pretrained
-
-        model, config = load_pretrained(
-            args.model or "mhc-i-energy", cache_dir=args.cache_dir,
-            device=args.device, local_files_only=args.local_files_only,
-        )
-    else:
-        from grip_models import BaseEnergyModel, load_weights
-
-        digest = file_sha256(args.checkpoint)
-        config = load_config(args.config)
-        model = BaseEnergyModel(config)
-        load_weights(
-            model, args.checkpoint, sha256=digest, state_dict_key=args.state_dict_key,
-        )
-        model.to(args.device).eval()
+    digest = file_sha256(args.checkpoint)
+    config = load_config(args.config)
+    model = BaseEnergyModel(config)
+    load_weights(
+        model, args.checkpoint, sha256=digest, state_dict_key=args.state_dict_key,
+    )
+    model.to(args.device).eval()
     return score_record(model, record, config)
 
 
@@ -65,25 +55,16 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     encode = commands.add_parser("encode", help="encode a synthetic or supplied record without weights")
-    score = commands.add_parser("score", help="score a supplied record with pretrained or local weights")
+    score = commands.add_parser("score", help="score a supplied record with a local checkpoint")
     for command in (encode, score):
         command.add_argument("--record", type=Path, required=command is score,
                              help="JSON file containing one peptide/context record")
         command.add_argument("--config", type=Path,
                              help="matching configuration JSON; omitted uses core defaults")
-    weights = score.add_mutually_exclusive_group()
-    weights.add_argument("--model", choices=["mhc-i-energy"], help="pretrained model (default: mhc-i-energy)")
-    weights.add_argument("--checkpoint", type=Path, help="local trained checkpoint instead of pretrained weights")
-    score.add_argument("--cache-dir", type=Path, help="pretrained model cache directory")
-    score.add_argument("--local-files-only", action="store_true", help="use cached pretrained files without downloading")
+    score.add_argument("--checkpoint", type=Path, required=True, help="local trained checkpoint")
     score.add_argument("--state-dict-key", help="top-level state-dictionary key, if the file is wrapped")
     score.add_argument("--device", default="cpu", help="PyTorch device, e.g. cpu or cuda:0 (default: cpu)")
     args = parser.parse_args(argv)
-    if args.command == "score":
-        if args.checkpoint is None and (args.config is not None or args.state_dict_key is not None):
-            parser.error("--config and --state-dict-key require --checkpoint")
-        if args.checkpoint is not None and (args.cache_dir is not None or args.local_files_only):
-            parser.error("--cache-dir and --local-files-only apply to pretrained models")
     try:
         result = run(args)
     except (OSError, ValueError, TypeError, KeyError, RuntimeError) as error:

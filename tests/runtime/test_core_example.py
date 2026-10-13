@@ -68,62 +68,32 @@ class CoreExampleTests(unittest.TestCase):
                 self.assertEqual(result.stdout, "")
                 self.assertIn("required", result.stderr)
 
-    def test_scoring_uses_pretrained_defaults_and_forwards_offline_options(self):
-        model, config = object(), object()
-        energies = {"single": 1.0, "pair": 2.0, "total": 3.0}
-        with tempfile.TemporaryDirectory(prefix="grip-example-") as directory:
-            record = Path(directory) / "record.json"
-            record.write_text(json.dumps(EXAMPLE.SYNTHETIC_RECORD))
-            with (
-                patch(
-                    "grip_models.load_pretrained", return_value=(model, config)
-                ) as load,
-                patch("grip_models.score_record", return_value=energies) as score,
-            ):
-                result = self.run_example("score", "--record", str(record))
-                self.assertEqual(result.returncode, 0, result.stderr)
-                load.assert_called_once_with(
-                    "mhc-i-energy", cache_dir=None, device="cpu", local_files_only=False
-                )
-                score.assert_called_once_with(model, EXAMPLE.SYNTHETIC_RECORD, config)
-                self.assertEqual(json.loads(result.stdout), energies)
-                load.reset_mock()
-                result = self.run_example(
-                    "score",
-                    "--record",
-                    str(record),
-                    "--cache-dir",
-                    directory,
-                    "--local-files-only",
-                    "--device",
-                    "test-device",
-                )
-                self.assertEqual(result.returncode, 0, result.stderr)
-                load.assert_called_once_with(
-                    "mhc-i-energy",
-                    cache_dir=Path(directory),
-                    device="test-device",
-                    local_files_only=True,
-                )
+    def test_scoring_requires_checkpoint_before_reading_input(self):
+        with patch.object(EXAMPLE, "run") as run:
+            result = self.run_example("score", "--record", "unused.json")
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("--checkpoint", result.stderr)
+        run.assert_not_called()
 
-    def test_pretrained_failure_never_produces_a_score(self):
+    def test_checkpoint_failure_never_produces_a_score(self):
         with tempfile.TemporaryDirectory(prefix="grip-example-") as directory:
             record = Path(directory) / "record.json"
             record.write_text(json.dumps(EXAMPLE.SYNTHETIC_RECORD))
+            checkpoint = Path(directory) / "model.pt"
+            checkpoint.write_bytes(b"fixture, never deserialized")
             with (
-                patch(
-                    "grip_models.load_pretrained",
-                    side_effect=FileNotFoundError("not cached"),
-                ),
+                patch("grip_models.BaseEnergyModel"),
+                patch("grip_models.load_weights", side_effect=ValueError("Invalid checkpoint")),
                 patch("grip_models.score_record") as score,
             ):
                 result = self.run_example(
-                    "score", "--record", str(record), "--local-files-only"
+                    "score", "--record", str(record), "--checkpoint", str(checkpoint)
                 )
                 score.assert_not_called()
         self.assertEqual(result.returncode, 2)
         self.assertEqual(result.stdout, "")
-        self.assertIn("not cached", result.stderr)
+        self.assertIn("Invalid checkpoint", result.stderr)
 
     def test_local_checkpoint_uses_matching_options(self):
         model = Mock()
