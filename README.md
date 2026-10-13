@@ -22,13 +22,15 @@ python -m pip install .
 
 ## Run model
 
-Score a sequence record with a local checkpoint and its matching configuration:
+Download the trained sequence energy model: [weights](https://github.com/cosmoss8274/GRIP/releases/download/v1.0.1/grip-energy.pt) · [configuration](https://github.com/cosmoss8274/GRIP/releases/download/v1.0.1/grip-energy.json).
+
+Score a peptide in its receptor sequence context:
 
 ```bash
-python examples/core.py score --record record.json --checkpoint model.pt --config config.json
+python examples/core.py score --record record.json --checkpoint grip-energy.pt --config grip-energy.json
 ```
 
-The model returns single-site, pairwise and total energies. Supply the peptide and receptor context in [the input format](docs/usage.md#prepare-a-record), using the sequence representation supported by the checkpoint.
+The model returns single-site, pairwise and total energies for ranking peptides of the same length in a fixed receptor context. See [the input format](docs/usage.md#prepare-a-record) for MHC pseudosequences and TCR sequence fields.
 
 To try input encoding, run `python examples/core.py encode`. See [Usage](docs/usage.md) for Python examples and [Models](docs/models.md) for classification and inverse inference.
 

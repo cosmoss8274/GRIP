@@ -1,31 +1,33 @@
 # Sequence energy model
 
-Evaluate a peptide in its receptor context using a local model checkpoint and its matching configuration.
+Evaluate a peptide in its receptor context using the trained [sequence energy weights](https://github.com/cosmoss8274/GRIP/releases/download/v1.0.1/grip-energy.pt) and [configuration](https://github.com/cosmoss8274/GRIP/releases/download/v1.0.1/grip-energy.json). The configuration specifies the 16-layer model.
 
 ## Prepare a record
 
-Save the peptide in `epitope_sequence` and its MHC sequence in `mhc`, using the receptor representation supported by the checkpoint. The synthetic strings below illustrate the JSON format; replace them with the sequences to be scored:
+Save the peptide in `epitope_sequence` and its receptor context in the corresponding sequence fields. For MHC-only scoring with the released weights, `mhc` contains the 34-residue MHC pseudosequence. The synthetic strings below illustrate the JSON format; replace them with the sequences to be scored:
 
 ```json
 {
   "epitope_sequence": "AAAAAAAA",
-  "mhc": "ACDEFGHIK"
+  "mhc": "ACDEFGHIKLMNPQRSTVWYACDEFGHIKLMNPQ"
 }
 ```
 
 Use uppercase standard amino-acid letters without spaces. Each sequence must fit `data.max_length`, which defaults to 500.
 
-For TCR checkpoints, supply the corresponding `l_v`, `l_j`, `h_v`, `cdr3_b` and `h_j` components. Each record requires at least one MHC or TCR component. Omitted fields, empty strings and `null` denote absent components.
+For TCR-conditioned scoring, supply the amino-acid sequences of the TCR alpha-chain V and J regions in `l_v` and `l_j`, and the beta-chain V, CDR3 and J regions in `h_v`, `cdr3_b` and `h_j`. The training representation uses the associated MHC chain sequence when MHC accompanies TCR inputs. Supply sequences rather than allele or gene names. Each record requires at least one MHC or TCR component; omitted fields, empty strings and `null` denote absent components.
 
 ## Load and score
 
 From a cloned repository:
 
 ```bash
-python examples/core.py score --record record.json --checkpoint model.pt --config config.json
+python examples/core.py score --record record.json --checkpoint grip-energy.pt --config grip-energy.json
 ```
 
-The command prints a JSON object containing `single`, `pair` and `total` energies. Omit `--config` to use the core defaults. Set `model.num_layers` to match the checkpoint's trunk depth. For a state dictionary stored under a top-level key, add that exact key, for example `--state-dict-key model_state_dict`. Use `--device cuda:0` for a GPU.
+The command prints a JSON object containing `single`, `pair` and `total` energies. Lower energies indicate greater model compatibility when comparing peptides of the same length in a fixed receptor context. Use the supplied configuration with the released weights and add `--device cuda:0` for a GPU.
+
+For other checkpoints, set `model.num_layers` to match the model depth. Omitting `--config` uses the four-layer core defaults. If the state dictionary is stored under a top-level key, add that key with `--state-dict-key`.
 
 In Python:
 
@@ -33,9 +35,9 @@ In Python:
 import json
 from grip_models import BaseEnergyModel, load_config, load_weights, score_record
 
-config = load_config("config.json")
+config = load_config("grip-energy.json")
 model = BaseEnergyModel(config)
-load_weights(model, "model.pt", sha256=checkpoint_digest)
+load_weights(model, "grip-energy.pt", sha256=checkpoint_digest)
 model.eval()
 
 with open("record.json") as stream:
@@ -43,7 +45,7 @@ with open("record.json") as stream:
 energies = score_record(model, record, config)
 ```
 
-`checkpoint_digest` is the expected file checksum. The command-line example computes the checksum of the supplied local file automatically. Both interfaces require a checkpoint that matches the model configuration and input representation.
+`checkpoint_digest` is the expected file checksum, provided with the [model downloads](https://github.com/cosmoss8274/GRIP/releases/tag/v1.0.1). The command-line example computes the checksum of the supplied local file automatically. Both interfaces require a checkpoint that matches the model configuration and input representation.
 
 ## Try input encoding
 
