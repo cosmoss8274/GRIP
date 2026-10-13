@@ -8,7 +8,7 @@ This repository provides the sequence energy model, GRIP-CLA classifier and inve
 
 [![GRIP framework, Figure 1](docs/assets/figure-1.png)](docs/assets/figure-1.pdf)
 
-[Website](https://zhanggroup.org/GRIP/) · [Usage](docs/usage.md) · [Model interfaces](docs/models.md) · [Weights](https://github.com/cosmoss8274/GRIP/releases/tag/v0.1.0)
+[Website](https://zhanggroup.org/GRIP/) · [Usage](docs/usage.md) · [Model interfaces](docs/models.md) · [Weights](https://github.com/cosmoss8274/GRIP/releases)
 
 ## Installation
 
@@ -36,7 +36,7 @@ print(energies)  # single, pair, total
 
 Supply a peptide and its MHC pseudosequence in [the input format](docs/usage.md#prepare-a-record). The model returns single-site, pairwise and total energies. Weights are downloaded on first use and cached locally.
 
-See [Models](docs/models.md) for classification and inverse-model usage. The [weight download](https://github.com/cosmoss8274/GRIP/releases/tag/v0.1.0) contains the MHC-I energy checkpoint; classification and inverse inference use local task-specific checkpoints.
+See [Models](docs/models.md) for classification and inverse-model usage. [MHC-II and TCR classification checkpoints](https://github.com/cosmoss8274/GRIP/releases/tag/v0.2.0) include checksums and input specifications. The [MHC-I energy checkpoint](https://github.com/cosmoss8274/GRIP/releases/tag/v0.1.0) is downloaded automatically by `load_pretrained`. Inverse inference uses a local task-specific checkpoint.
 
 To try input encoding without weights, run `python examples/core.py encode`. For command-line scoring, local checkpoints and offline use, see [Usage](docs/usage.md).
 

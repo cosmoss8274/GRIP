@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "release": "v0.2.0",
+  "sequence_alphabet": "20 standard uppercase amino acids",
+  "models": {
+    "mhc-ii-classifier": {
+      "filename": "grip-mhc-ii-classifier.pt",
+      "sha256": "a471c33467a1f087b1401fbfe3fa845a30cd8239a31205303e918566c56513a4",
+      "profile": "mhc",
+      "input": {
+        "required_fields": ["epitope_sequence", "mhc"],
+        "mhc_representation": "34-amino-acid MHC-II pseudosequence",
+        "empty_or_omitted_fields": ["l_v", "l_j", "h_v", "cdr3_b", "h_j"]
+      }
+    },
+    "tcr-classifier": {
+      "filename": "grip-tcr-classifier.pt",
+      "sha256": "fc14b8ddb6aa9d76fd3e57665b721129e495631a5ca80dff1c748210d198d2b5",
+      "profile": "tcr_legacy",
+      "input": {
+        "required_fields": ["epitope_sequence", "cdr3_b"],
+        "optional_fields": ["mhc", "l_v", "l_j", "h_v", "h_j"],
+        "mhc_representation": "Full protein amino-acid sequence, or empty when absent",
+        "reference_mhc_lengths": [0, 362, 365],
+        "tcr_representation": "Amino-acid sequences for each supplied TCR component"
+      }
+    }
+  }
+}
