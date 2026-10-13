@@ -177,6 +177,21 @@ class BaseEnergyModel(nn.Module):
         h_v_len = h_v_encoded.shape[1]
         cdr3_b_len = cdr3_b_encoded.shape[1]
         h_j_len = h_j_encoded.shape[1]
+        for component, encoded in (
+            ("mhc", mhc_encoded),
+            ("l_v", l_v_encoded),
+            ("l_j", l_j_encoded),
+            ("h_v", h_v_encoded),
+            ("cdr3_b", cdr3_b_encoded),
+            ("h_j", h_j_encoded),
+        ):
+            lengths = batch[f"{component}_lengths"]
+            if lengths.shape != (batch_size,) or not torch.all(
+                lengths == encoded.shape[1]
+            ):
+                raise ValueError(
+                    f"{component} sequences must have the same unpadded length within a batch."
+                )
         epitope_lengths = batch["epitope_lengths"]
         if epitope_lengths.numel() != batch_size or not torch.all(
             epitope_lengths == epitope_lengths[0]

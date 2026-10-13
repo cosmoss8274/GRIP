@@ -10,7 +10,7 @@ import math
 from pathlib import Path
 from types import SimpleNamespace
 
-from .configuration import load_config as _reference_config
+from .configuration import _default_config
 
 _FIELDS = ("epitope_sequence", "mhc", "l_v", "l_j", "h_v", "cdr3_b", "h_j")
 _AMINO_ACIDS = frozenset("ARNDCQEGHILKMFPSTWYV")
@@ -118,7 +118,7 @@ def _fixed_architecture(config):
 def _validated_config(config):
     if not isinstance(config, SimpleNamespace):
         raise TypeError("config must be a configuration object returned by load_config")
-    defaults = _plain(_reference_config(None))
+    defaults = _default_config()
     supplied = _plain(config)
     _finite(supplied)
     merged = _merge_known(defaults, supplied, complete=True)
@@ -143,7 +143,7 @@ def load_config(config_path=None):
         if not isinstance(supplied, dict):
             raise ValueError("Configuration JSON must be an object")
         _finite(supplied)
-    defaults = _plain(_reference_config(None))
+    defaults = _default_config()
     merged = defaults if supplied is None else _merge_known(defaults, supplied)
     _fixed_architecture(merged)
     return _namespace(merged)

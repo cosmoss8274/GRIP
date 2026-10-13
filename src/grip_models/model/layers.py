@@ -5,60 +5,6 @@ from torch.nn import functional as F
 from einops import rearrange
 
 
-def load_config(config_path):
-    """Load config from JSON file and convert to object."""
-    default_config = {
-        "model": {
-            "num_atom": 5,
-            "num_recycle": 3,
-            "embeddings": {
-                "seq_info_dim": 21,
-                "m_dim": 1024,
-                "tf_dim": 768,
-                "seq_channel": 384,
-                "pair_channel": 128,
-                "max_relative_feature": 32,
-                "non_seq_info_dim": 24,
-                "go_embed_dim": 64,
-            },
-            "heads": {"seqhead": {}, "pairhead": {}},
-        },
-        "loss": {
-            "seq": {"config": {}, "loss_fn": "seq_loss", "weight": 1.0},
-            "mrf_pair": {
-                "config": {"pair_norm_weight": 0.01, "site_norm_weight": 0.01},
-                "loss_fn": "mrf_pair_loss",
-                "weight": 1.0,
-            },
-        },
-        "data": {
-            "batch_size": 32,
-            "padding": 100,
-            "n_channels_emb": 21,
-            "n_channels_seq": 21,
-            "n_channels_esm": 33,
-            "go_embedding_dim": 64,
-            "m": 1024,
-            "z": 128,
-        },
-    }
-    if config_path:
-        with open(config_path) as f:
-            user_config = json.load(f)
-            default_config.update(user_config)
-
-    def dict_to_namespace(d):
-        namespace = SimpleNamespace()
-        for key, value in d.items():
-            if isinstance(value, dict):
-                setattr(namespace, key, dict_to_namespace(value))
-            else:
-                setattr(namespace, key, value)
-        return namespace
-
-    return dict_to_namespace(default_config)
-
-
 class Linear(nn.Module):
 
     def __init__(self, input_dim, output_dim, init, bias=True):

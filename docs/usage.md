@@ -93,6 +93,8 @@ Omit `--config` to use the core defaults. `model.num_layers` can be set in the c
 
 `TrainingDataGenerator` remains an alias for `SequenceDataset` for existing scripts. Classification and structure-conditioned logits use the [model interfaces](models.md).
 
+For direct model calls, group records by the lengths of the peptide and every receptor component; `score_record` and `classify_record` evaluate one record at a time.
+
 ## Development
 
 The CPU test environment uses Python 3.12 and `requirements-test.txt`:

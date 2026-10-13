@@ -19,7 +19,7 @@ import pandas as pd
 import torch
 
 from grip_models import inference
-from grip_models.configuration import load_config as reference_config
+from grip_models.configuration import _default_config
 from grip_models.data import SequenceDataset
 
 
@@ -57,28 +57,28 @@ class ConfigContractTests(unittest.TestCase):
             return inference.load_config(path)
 
     def test_none_preserves_all_original_defaults(self):
-        self.assertEqual(inference.load_config(), reference_config(None))
-        self.assertEqual(inference.load_config(None), reference_config(None))
+        self.assertEqual(inference._plain(inference.load_config()), _default_config())
+        self.assertEqual(inference._plain(inference.load_config(None)), _default_config())
         self.assertFalse(hasattr(inference.load_config().data, "max_length"))
 
     def test_valid_partial_override_recursively_preserves_other_values(self):
-        before = reference_config(None)
-        actual = self.load_text(json.dumps({
+        before = _default_config()
+        actual = inference._plain(self.load_text(json.dumps({
             "data": {"batch_size": 2, "max_length": 30},
             "model": {"heads": {"losshead": {"l1_weight": 0.03}}},
-        }))
+        })))
         expected = deepcopy(before)
-        expected.data.batch_size = 2
-        expected.data.max_length = 30
-        expected.model.heads.losshead.l1_weight = 0.03
+        expected["data"]["batch_size"] = 2
+        expected["data"]["max_length"] = 30
+        expected["model"]["heads"]["losshead"]["l1_weight"] = 0.03
         self.assertEqual(actual, expected)
-        self.assertEqual(reference_config(None), before)
+        self.assertEqual(_default_config(), before)
 
     def test_configuration_objects_do_not_share_mutable_defaults(self):
         first = inference.load_config()
         second = inference.load_config()
         first.data.batch_size = 7
-        self.assertEqual(second, reference_config(None))
+        self.assertEqual(inference._plain(second), _default_config())
 
     def test_json_must_be_an_object(self):
         for text in ("[]", "null", "4", '"value"', "true"):
