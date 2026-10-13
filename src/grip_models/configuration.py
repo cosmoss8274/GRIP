@@ -1,12 +1,9 @@
 """Default configuration for the base energy model."""
 
-import json
-from types import SimpleNamespace
 
-
-def load_config(config_path):
-    """Load config from JSON file and convert to object."""
-    default_config = {
+def _default_config():
+    """Return an independent dictionary of model defaults."""
+    return {
         "model": {
             "num_atom": 5,
             "num_recycle": 3,
@@ -44,21 +41,3 @@ def load_config(config_path):
             "z": 128,
         },
     }
-    if config_path:
-        with open(config_path) as f:
-            user_config = json.load(f)
-            default_config = merge_dicts(default_config, user_config)
-
-    def dict_to_namespace(d):
-        if not isinstance(d, dict):
-            return d
-        namespace = SimpleNamespace()
-        for key, value in d.items():
-            if isinstance(value, dict):
-                setattr(namespace, key, dict_to_namespace(value))
-            else:
-                setattr(namespace, key, value)
-        return namespace
-
-    config = dict_to_namespace(default_config)
-    return config

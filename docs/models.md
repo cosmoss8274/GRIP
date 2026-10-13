@@ -8,15 +8,9 @@
 
 ## Sequence energy
 
-```python
-from grip_models import load_pretrained, score_record
+Load a local checkpoint with `BaseEnergyModel` and `load_weights`, then evaluate a record with `score_record`. The outputs are single-site (`single`), pairwise (`pair`) and total (`total`) energies.
 
-model, config = load_pretrained("mhc-i-energy")
-energies = score_record(model, record, config)
-```
-
-Returns single-site (`single`), pairwise (`pair`) and total (`total`) energies.
-See [Usage](usage.md) for input formatting and local checkpoints.
+See [Usage](usage.md) for configuration, input formatting and examples.
 
 ## Classification
 
