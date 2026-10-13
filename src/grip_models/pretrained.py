@@ -9,7 +9,7 @@ from pathlib import Path
 import tempfile
 from urllib.request import Request, urlopen
 
-_RELEASE = "v0.1.0"
+_RELEASE = "v1.0.0"
 _RELEASE_URL = f"https://github.com/cosmoss8274/GRIP/releases/download/{_RELEASE}"
 _MODELS = {
     "mhc-i-energy": {
@@ -47,7 +47,7 @@ def _asset(cache, filename, expected, *, local_files_only=False):
     temporary = None
     try:
         request = Request(
-            f"{_RELEASE_URL}/{filename}", headers={"User-Agent": "GRIP/0.1.0"}
+            f"{_RELEASE_URL}/{filename}", headers={"User-Agent": "GRIP/1.0.0"}
         )
         with urlopen(request, timeout=60) as response:
             with tempfile.NamedTemporaryFile(
@@ -75,7 +75,7 @@ def load_pretrained(
     """Load a pretrained energy model and its configuration.
 
     ``mhc-i-energy`` selects the released MHC-I model. Files are verified and
-    cached in ``$XDG_CACHE_HOME/grip/v0.1.0`` or ``~/.cache/grip/v0.1.0``.
+    cached in ``$XDG_CACHE_HOME/grip/v1.0.0`` or ``~/.cache/grip/v1.0.0``.
     Set ``local_files_only=True`` to use cached files offline. The model is
     returned on ``device`` in evaluation mode."""
     if not isinstance(name, str) or name not in _MODELS:

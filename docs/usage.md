@@ -41,7 +41,7 @@ The command prints a JSON object containing `single`, `pair` and `total`.
 
 ## Cache and offline use
 
-The model and configuration are downloaded once from the [v0.1.0 release](https://github.com/cosmoss8274/GRIP/releases/tag/v0.1.0). The default cache is `$XDG_CACHE_HOME/grip/v0.1.0` or `~/.cache/grip/v0.1.0`. Set `cache_dir` to use another directory. Cached files are checked before loading.
+The model and configuration are downloaded once from the [v1.0.0 release](https://github.com/cosmoss8274/GRIP/releases/tag/v1.0.0). The default cache is `$XDG_CACHE_HOME/grip/v1.0.0` or `~/.cache/grip/v1.0.0`. Set `cache_dir` to use another directory. Cached files are checked before loading.
 
 After the files are cached, require offline loading with:
 
